@@ -66,6 +66,8 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
+userSchema.index({ name: 'text', username : 'text' });
+
 // Hide sensitive fields
 userSchema.methods.toJSON = function () {
   const obj = this.toObject();

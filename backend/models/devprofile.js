@@ -10,5 +10,7 @@ const devProfileSchema = new mongoose.Schema({
   status:String
 });
 
+devProfileSchema.index({ skills: 'text' });
+
 const DevProfile = mongoose.model('DevProfile', devProfileSchema);
 export default DevProfile;

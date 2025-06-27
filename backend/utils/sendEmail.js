@@ -1,23 +1,24 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
+import dotenv from 'dotenv';
 
-const sendEmail = async (to, subject, html) => {
+
+
+dotenv.config();
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+export  const sendEmail = async (to, subject, html) => {
   try {
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'nnagi88844@gmail.com',     
-        pass: 'your-app-password',         // generate from Gmail > App Passwords
-      },
+    
+    const response = await resend.emails.send({
+      from:process.env.RESEND_FROM_EMAIL,
+      to:to,
+      subject:subject,
+      html:html,
     });
-
-    const mailOptions = {
-      from: '"Startup Station" <nnagi88844@gmail.com>', 
-      to: to,                                          
-      subject: subject,
-      html: html,                                      
-    };
-
-    await transporter.sendMail(mailOptions);
+    if (response.error)
+    {
+      throw new Error(response.error.message);
+    }
     console.log('Email sent to:', to);
   } catch (error) {
     console.error('Email send failed:', error.message);
@@ -25,4 +26,22 @@ const sendEmail = async (to, subject, html) => {
   }
 };
 
-export default sendEmail;
+export const contactAdmin = async (name,email,message)=>
+{
+  try {
+    
+    const response = await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL,
+      to: process.env.ADMIN_EMAIL,
+      subject:`Message from ${name} - Startup stn`,
+      text:`From : ${email },\n ${message}`,
+    });
+  
+    console.log('Email sent to:', to);
+  } catch (error) {
+    console.error('Email send failed:', error.message);
+  }
+}
+
+
+

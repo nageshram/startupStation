@@ -12,34 +12,41 @@ import notificationRoutes from './routes/notificationRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
 import initSocketServer from './sockets/socketServer.js';
 import { initNotificationSocket } from './sockets/notificationSocket.js';
+import contactAdminRoute from './routes/contactRoute.js'
+import searchRoute from './routes/searchRoutes.js'
 import { Server } from 'socket.io'
 import http from 'http';
-
-import path from 'path'
+import cors from 'cors'
+import path from 'path';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
 dotenv.config();
+app.use(cors());
 app.use(express.json());
+
+
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.use('/upload', uploadRoutes);
-app.use('/users', userRoutes);
-app.use('/auth', authRoutes);
-app.use('/requests', requestRoutes);
-app.use('/tasks', taskRoutes);
-app.use('/startup', startupRoutes);
-app.use('/documents', documentRoutes);
-app.use('/messages', messageRoutes);
-app.use('/notifications', notificationRoutes);
-
+app.use('/api/upload', uploadRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/requests', requestRoutes);
+app.use('/api/tasks', taskRoutes);
+app.use('/api/startup', startupRoutes);
+app.use('/api/documents', documentRoutes);
+app.use('/api/messages', messageRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/search', searchRoute);
+app.use('/api/contactadmin', contactAdminRoute );
 
 const server = http.createServer(app);
-
 
 const io = new Server(server, {
   cors: {
@@ -55,9 +62,6 @@ initNotificationSocket(io);  //  Notifications
 app.get("/", (req, res)=>{
     res.send("Server is ready");
 });
-
-
-
 
 //console.log(process.env.MONGO_URI);
 const port = process.env.PORT || 5000;

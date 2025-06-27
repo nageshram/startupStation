@@ -1,6 +1,6 @@
 import User from '../models/user.js';
 import jwt from 'jsonwebtoken'
-import sendEmail  from '../utils/sendEmail.js'
+import {sendEmail}  from '../utils/sendEmail.js'
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
@@ -139,3 +139,4 @@ export const resetPasswordWithOtp = async (req, res) => {
     res.status(500).json({ message: 'Failed to reset password' });
   }
 };
+
