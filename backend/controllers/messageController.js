@@ -1,19 +1,19 @@
 import Message from '../models/message.js'
 import User from '../models/user.js'
 
-exports.sendMessage = async (req, res) => {
+export const sendMessage = async (req, res) => {
   const { chatId, sender, receiver, text } = req.body;
   const message = await Message.create({ chatId, sender, receiver, text });
   res.status(201).json(message);
 };
 
-exports.getMessagesForChat = async (req, res) => {
+export const getMessagesForChat = async (req, res) => {
   const { chatId } = req.params;
   const messages = await Message.find({ chatId }).sort({ createdAt: 1 });
   res.json(messages);
 };
 
-exports.searchUserChats = async (req, res) => {
+export const searchUserChats = async (req, res) => {
   const userId = req.user._id;
   const chats = await Message.aggregate([
     {
@@ -38,7 +38,7 @@ exports.searchUserChats = async (req, res) => {
   res.json(chats);
 };
 
-exports.getMessagesWithUser = async (req, res) => {
+export const getMessagesWithUser = async (req, res) => {
   const userId = req.user._id;
   const targetId = req.params.userId;
 
@@ -55,7 +55,7 @@ exports.getMessagesWithUser = async (req, res) => {
   res.json(messages);
 };
 
-exports.markAsSeen = async (req, res) => {
+export const markAsSeen = async (req, res) => {
   const { chatId } = req.params;
   const userId = req.user._id;
 
@@ -63,7 +63,7 @@ exports.markAsSeen = async (req, res) => {
   res.json({ message: 'Messages marked as seen.' });
 };
 
-exports.getUserChatList = async (req, res) => {
+export const getUserChatList = async (req, res) => {
   const userId = req.user._id;
 
   const chats = await Message.aggregate([

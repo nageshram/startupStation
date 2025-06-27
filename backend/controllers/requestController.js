@@ -3,6 +3,8 @@ import  Startup  from '../models/startup.js';
 import Team  from '../models/team.js';
 import  Document  from '../models/document.js';
 import DevProfile from '../models/devprofile.js';
+import { createNotification } from './notificationController.js';
+import { sendNotification } from '../sockets/notificationSocket.js';
 
 export const getMyRequests = async (req, res) => {
   const sent = await Request.find({ sender: req.user.id }).populate('receiver');
@@ -25,6 +27,14 @@ export const sendJobRequest = async (req, res) => {
     targetRoleId,
     desc
   });
+  const notification = await createNotification({
+    user: startup.founderId,
+    type: 'request',
+    title: 'New Job Request',
+    message: `${req.user.name} sent you a job request for ${role}.`,
+    data: { requestId: request._id }
+  });
+  sendNotification(startup.founderId, notification);
   res.status(201).json(request);
 };
 
@@ -42,6 +52,16 @@ export const sendInvestRequest = async (req, res) => {
     startupId,
     desc
   });
+  
+  const notification = await createNotification({
+    user: startup.founderId,
+    type: 'request',
+    title: 'New Invest Request',
+    message: `${req.user.name} sent you a invest request.`,
+    data: { requestId: request._id }
+  });
+  sendNotification(startup.founderId, notification);
+
   res.status(201).json(request);
 };
 
@@ -64,8 +84,48 @@ export const acceptRequest = async (req, res) => {
     desc: `You are invited to ${request.category === 'job' ? 'join the team' : 'invest in the startup'}`
   });
 
+  const notification = await createNotification({
+    user: request.sender,
+    type: 'update',
+    title: `${request.category === 'job' ? ' confirm and join the team' : 'confirm and invest in the startup'} Request Accepted`,
+    message: `Your request has been accepted.`,
+    data: { requestId: request._id }
+  });
+  sendNotification(request.sender, notification);
+
   res.status(200).json({ msg: 'Request accepted and proposal sent', proposal });
 };
+
+export const founderRequest = async (req, res) => {
+  
+  const { receiverId, requestType, startupId, targetRoleId }= req.body;
+  if (!requestType || requestType !== 'null' || !receiverId) return res.status(400).json({ msg: 'Invalid request' });
+  
+
+  const proposalType = requestType === 'job' ? 'job-proposal' : 'invest-proposal';
+
+  const proposal = await Request.create({
+    sender: req.params.id,
+    receiver: receiverId,
+    type: proposalType,
+    category: requestType,
+    startupId: startupId,
+    targetRoleId: targetRoleId,
+    desc: `You are invited to ${request.category === 'job' ? 'join the team' : 'invest in the startup'}`
+  });
+
+  const notification = await createNotification({
+    user: receiverId,
+    type: 'update',
+    title: `${requestType === 'job' ? '  join the team' : 'invest in the startup'} `,
+    message: `Your are invited ${requestType === 'job' ? '  join the team' : 'invest in the startup'}`,
+    data: { requestId: proposal._id }
+  });
+  sendNotification(receiverId, notification);
+
+  res.status(200).json({ msg: ' Proposal sent', proposal });
+};
+
 
 export const confirmJobProposal = async (req, res) => {
   const request = await Request.findById(req.params.id);
@@ -85,6 +145,18 @@ export const confirmJobProposal = async (req, res) => {
           profile.status = "hired";
           await profile.save();
       }
+    
+     const startup = await Startup.findById(request.startupId);
+    const notification = await createNotification({
+    user: startup.founderId,
+    type: 'update',
+    title: 'job proposal accepted',
+    message: `${req.user.name} has accepted your job proposal for ${role}. now he is part of your startup`,
+    data: { requestId: request._id }
+  });
+  sendNotification(startup.founderId, notification);
+      
+
   }
  
 
@@ -120,6 +192,16 @@ export const confirmInvestProposal = async (req, res) => {
       { $addToSet: { investors: investorId } },
       { new: true }
     );
+
+    const startup1 = await Startup.findById(request.startupId);
+    const notification = await createNotification({
+    user: startup1.founderId,
+    type: 'update',
+    title: 'Invest proposal accepted',
+    message: `${req.user.name} has accepted your invest proposal for ${role}. now he is part of your startup`,
+    data: { requestId: request._id }
+  });
+  sendNotification(startup1.founderId, notification);
     res.status(200).json(startup);
   } catch (err) {
     res.status(500).json({ error: err.message });
