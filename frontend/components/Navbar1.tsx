@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Bell, LogOut, Search } from 'lucide-react';
 import { authFetch } from '../utils/authFetch';
 
@@ -9,6 +9,8 @@ const Navbar = ({ user, notifications = [], setErrors }) => {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const [navbarPlace, setNavbarPlace] = useState('home');
+  const location = useLocation();
+  const currentPath = location.pathname;
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -129,8 +131,8 @@ const Navbar = ({ user, notifications = [], setErrors }) => {
           )}
         </div>
 
-       { navbarPlace === 'home' ? (  <button 
-          onClick={() => { navigate('/dashboard'); setNavbarPlace('dashboard')} }
+       { currentPath === '/home' ? (  <button 
+          onClick={() => { navigate('/dashboard') } }
           className="text-gray-700 hover:text-pink-700 font-semibold flex items-center gap-1"
         >
            
@@ -143,7 +145,7 @@ const Navbar = ({ user, notifications = [], setErrors }) => {
         </button> 
        ):( 
         <button 
-          onClick={() =>{ navigate('/home'); setNavbarPlace('home'); }}
+          onClick={() =>{ navigate('/home');  }}
           className="text-gray-700 hover:text-pink-700 font-semibold flex items-center gap-1"
         >  
           <img

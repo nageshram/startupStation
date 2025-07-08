@@ -37,7 +37,7 @@ const ProfileDetails = ({ user, setErrors, setActiveChatUser }) => {
         {user.designation === 'Dev' && (
           <>
             <p className="text-gray-600"> {user.dev.desc}</p>
-            <p><strong className="text-gray-600">Skills:</strong> {user.dev.skills?.join(', ')}</p>
+            <p className="text-gray-600">Skills : {user.dev.skills?.join(', ')}</p>
           </>
         )}
       </div>

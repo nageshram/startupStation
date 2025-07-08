@@ -6,7 +6,7 @@ const Sidebar = ( {user} ) =>
 
     return(
         <>
-        <section className="min-h-screen p-5 my-2 gap-1 shadow-lg bg-amber-100 rounded-r-md">
+        <section className="min-h-screen p-5 my-2 gap-1 shadow-lg bg-gray-800  rounded-lg">
         <div className="w-[15vw] h-full  rounded-lg  items-center">
         <div className="basicDetails flex justify-center flex-col my-2 pb-3 items-center gap-2 border-b-2 border-gray-400">
          
@@ -17,7 +17,7 @@ const Sidebar = ( {user} ) =>
                 />
 
                 <div className="userDetails gap-1">
-                <h5 className="text-xl text-gray-600">Hello, {user.name}</h5> 
+                <h5 className="text-xl text-amber-50">Hello, {user.name}</h5> 
                 <p className="text-pink-700 text-center">@{user.username}</p>
 
                 </div> 
@@ -25,7 +25,7 @@ const Sidebar = ( {user} ) =>
         </div>
         <div className="Links flex flex-col justify-center items-center">
             <ul className="list-none">
-            <li className="py-2"><Link  to="/dashboard/updateprofile" className="text-gray-600 text-xl font-sans  hover:text-pink-700">Profile </Link>   </li>
+            <li className="py-2"><Link  to="/dashboard" className="text-gray-50 text-lg  hover:text-pink-700">Profile </Link>   </li>
             </ul>
         </div>
     </div>

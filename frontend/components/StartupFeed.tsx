@@ -35,6 +35,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
         if (data.startups && data.startups.length > 0) setActiveTab('startups');
         else if (data.devs && data.devs.length > 0) setActiveTab('devs');
         else if (data.Investors && data.Investors.length > 0) setActiveTab('Investors');
+        else if (data.founders && data.founders.length > 0) setActiveTab('founders');
         else setActiveTab('');
       } catch (err) {
         setErrors('Search failed');
@@ -145,6 +146,20 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
                 Investors ({results.investors.length})
               </button>
             )}
+
+            {results.founders?.length > 0 && (
+              <button
+                className={`px-3 py-1 rounded ${activeTab === 'founders' ? 'bg-pink-600 text-white' : 'bg-gray-100'}`}
+                onClick={() => setActiveTab('founders')}
+              >
+                Founders ({results.founders.length})
+              </button>
+            )}
+
+            { results.devs?.length === 0 && results.investors?.length === 0 && results.startups?.length === 0 && results.founders?.length === 0 && (
+              <span className="text-gray-500">No results found</span> 
+            )}
+
           </div>
         )}
       </div>
@@ -155,96 +170,117 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
           {/* --- Startups Tab --- */}
           {activeTab === 'startups' && (
             <div className="space-y-4">
-              {results.startups.map((startup, idx) => (
-                <div key={startup._id} className="bg-white rounded shadow p-4 flex items-center flex-row gap-4">
-                  <img src={startup.photo ? 'http://localhost:5000/api/upload/startup_pics/' + startup.photo : '/default.jpg'} className="w-16 h-16 rounded object-cover" alt="" />
-                  <div className="flex-1">
-                    <div className="font-bold text-lg">{startup.name}</div>
-                    <div className="text-xs text-gray-500">{startup.status}</div>
-                    <div className="text-sm text-gray-500">{startup.desc}</div>
-                     <div className="mb-2">
-                    <span className="text-xs font-semibold text-gray-500">Open Roles: </span>
-                    <span className="text-xs text-pink-600">{startup.openedRoles?.join(', ')}</span>
-                  </div>
-                  <div className="text-xs text-gray-500">{startup.founderId.name}</div>
-                    
-                  </div>
-                  {/* --- Dev: Send Job Request --- */}
-                  {user.designation === 'Dev' && (
-                    <div className="flex flex-col gap-2">
-                      <select
-                        className="border rounded p-1 text-sm"
-                        value={selectedRoles[startup._id] || ''}
-                        onChange={e =>
-                          setSelectedRoles({ ...selectedRoles, [startup._id]: e.target.value })
-                        }
-                      >
-                        <option value="">Select Role</option>
-                        {startup.teamId?.roles?.map((role) => (
-                          <option key={role._id} value={role._id}>
-                            {role.roleName}
-                          </option>
-                        ))}
-                      </select>
-                      <input
-                        type="text"
-                        className="border border-gray-300 rounded p-1 text-sm"
-                        placeholder="Remarks (required)"
-                        value={remarks[startup._id] || ''}
-                        onChange={e => setRemarks({ ...remarks, [startup._id]: e.target.value })}
-                      />
-                      <button
-                        onClick={() =>
-                          sendJobRequest(startup._id, remarks[startup._id], selectedRoles[startup._id])
-                        }
-                        className="px-3 py-1 bg-pink-600 text-white rounded hover:bg-pink-700"
-                        disabled={!selectedRoles[startup._id] || !remarks[startup._id]}
-                      >
-                        Send Job Request
-                      </button>
-                    </div>
-                  )}
-                  {/* --- Investor: Send Invest Request --- */}
-                  {user.designation === 'Investor' && (
-                    <div className="flex flex-col gap-2">
-                      <input
-                        type="text"
-                        className="border border-gray-300 rounded p-1 text-sm"
-                        placeholder="Enter your bid (required)"
-                        value={remarks[startup._id] || ''}
-                        onChange={e => setRemarks({ ...remarks, [startup._id]: e.target.value })}
-                      />
-                      <button
-                        onClick={() =>
-                          sendInvestRequest(startup._id, remarks[startup._id])
-                        }
-                        className="px-3 py-1 bg-pink-600 text-white rounded hover:bg-pink-700"
-                        disabled={!remarks[startup._id]}
-                      >
-                        Offer funding
-                      </button>
-                    </div>
-                  )}
-                  {/* --- Founder: Only Message Founder (not own startup) --- */}
-                  {user.designation === 'Founder' && startup.founderId?.username !== user.username && (
-                    <button
-                      onClick={() =>
-                        setActiveChatUser({
-                          username: startup.founderId.username,
-                          name: startup.founderId.name,
-                          photo: startup.founderId.photo,
-                          designation: startup.founderId.designation,
-                        })
-                      }
-                      className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-                    >
-                      Message Founder
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
+  {results.startups.map((startup, idx) => (
+    <div
+      key={startup._id}
+      className="bg-white rounded shadow p-4 flex flex-col gap-4 w-full"
+    >
+      {/* Image + Basic Info */}
+      <div className="flex gap-4">
+        <img
+          src={startup.photo ? `http://localhost:5000/api/upload/startup_pics/${startup.photo}` : '/default.jpg'}
+          className="w-20 h-20 rounded object-cover"
+          alt="startup"
+        />
+        <div className="flex-1">
+          <div className="font-bold text-lg">{startup.name}</div>
+          <div className="text-xs text-gray-500">{startup.status}</div>
+          <div className="text-sm text-gray-600">{startup.desc}</div>
+          <div className="my-2">
+            <span className="text-xs font-semibold text-gray-500">Open Roles: </span>
+            <span className="text-xs text-pink-600">{startup.openedRoles?.join(', ')}</span>
+          </div>
+          <div className="text-xs text-gray-500 italic">
+            by <span className="text-pink-700 font-medium">@{startup.founderId.username}</span>
+            <MessageSquare className='inline ml-1 text-gray-600 hover:text-gray-400 cursor-pointer'
+              onClick={() => setActiveChatUser({  
+                username: startup.founderId.username,
+                name: startup.founderId.name,
+                photo: startup.founderId.photo,
+                designation: startup.founderId.designation,
+              })}           
+            />
+
+          </div>
+        </div>
+      </div>
+
+      {/* Dev Controls */}
+      {user.designation === 'Dev' && (
+        <div className="flex flex-col gap-2">
+          <select
+            className="border rounded p-1 text-sm border-gray-300"
+            value={selectedRoles[startup._id] || ''}
+            onChange={e => setSelectedRoles({ ...selectedRoles, [startup._id]: e.target.value })}
+          >
+            <option value="" className='text-gray-300'>Select Role</option>
+            {startup.teamId?.roles?.map((role) => (
+              <option key={role._id} value={role._id}>
+                {role.roleName}
+              </option>
+            ))}
+          </select>
+          <input
+            type="text"
+            className="border border-gray-300 rounded p-1 text-sm"
+            placeholder="Remarks (required)"
+            value={remarks[startup._id] || ''}
+            onChange={e => setRemarks({ ...remarks, [startup._id]: e.target.value })}
+          />
+          <button
+            onClick={() =>
+              sendJobRequest(startup._id, remarks[startup._id], selectedRoles[startup._id])
+            }
+            className="px-3 py-1 bg-pink-600 text-white rounded hover:bg-pink-700"
+            disabled={!selectedRoles[startup._id] || !remarks[startup._id]}
+          >
+            Send Job Request
+          </button>
+        </div>
+      )}
+
+      {/* Investor Controls */}
+      {user.designation === 'Investor' && (
+        <div className="flex flex-col gap-2">
+          <input
+            type="text"
+            className="border border-gray-300 rounded p-1 text-sm"
+            placeholder="Enter your bid (required)"
+            value={remarks[startup._id] || ''}
+            onChange={e => setRemarks({ ...remarks, [startup._id]: e.target.value })}
+          />
+          <button
+            onClick={() => sendInvestRequest(startup._id, remarks[startup._id])}
+            className="px-3 py-1 bg-pink-600 text-white rounded hover:bg-pink-700"
+            disabled={!remarks[startup._id]}
+          >
+            Offer funding
+          </button>
+        </div>
+      )}
+
+      {/* Founder Message Option */}
+      {user.designation === 'Founder' && startup.founderId?.username !== user.username && (
+        <button
+          onClick={() =>
+            setActiveChatUser({
+              username: startup.founderId.username,
+              name: startup.founderId.name,
+              photo: startup.founderId.photo,
+              designation: startup.founderId.designation,
+            })
+          }
+          className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Message Founder
+        </button>
+      )}
+    </div>
+  ))}
+</div>
+
           )}
+
 {activeTab === 'founders' && (
   <div className="space-y-4">
     {results.founders.map((founder) => (
@@ -271,10 +307,10 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
 
           {/* --- Investors Tab --- */}
           {activeTab === 'investors' && (
-            <div className="space-y-4">
+             <div className="space-y-4">
               {results.investors.map((inv) => (
                 <div key={inv._id} className="bg-white rounded shadow p-4 flex items-center flex-col gap-4">
-                  <div className="flex flex-row justify-start gap-2">
+                  <div className="flex flex-row justify-left items-start gap-2">
                     <div>
                   <img src={ inv.photo ? 'http://localhost:5000/api/upload/profile_pics/' + inv.photo : '/default.jpg'} onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/profile_pics/default.jpg'; }} className="w-14 h-14 rounded-full object-cover" alt="" />
                       </div>
@@ -356,7 +392,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
                   {user.designation === 'Founder' && user.startupId?.teamId?.roles?.length > 0 && (
                     <div className="flex flex-row  gap-2">
                       <select
-                        className="border border-gray-300 rounded p-1 text-sm"
+                        className="border border-gray-300 rounded p-1 text-sm border-gray-300"
                         value={selectedRoles[dev._id] || ''}
                         onChange={e =>
                           setSelectedRoles({ ...selectedRoles, [dev._id]: e.target.value })
@@ -450,13 +486,13 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
                   </div>
    {  user.designation !== 'Investor' && user.designation !== 'Admin' && user.designation !== 'Founder' && (
                 <select
-                  className="border rounded p-1 mb-2 w-full text-sm"
+                  className="border rounded p-1 mb-2 w-full text-sm border-gray-300"
                   value={selectedRoles[idx] || ''}
                   onChange={e =>
                     setSelectedRoles({ ...selectedRoles, [idx]: e.target.value })
                   }
                 >
-                  <option value="">Select Role</option>
+                  <option value="" className='text-gray-300'>Select Role</option>
                   {startup.teamId?.roles?.map((role) => (
                     <option key={role._id} value={role._id}>
                       {role.roleName}

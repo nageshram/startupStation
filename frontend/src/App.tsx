@@ -43,7 +43,7 @@ function App() {
           }
         >
 
-          <Route path='updateprofile' element={ <UpdateProfile/> } />
+          <Route path='' element={ <UpdateProfile/> } />
 
           </Route>
           
