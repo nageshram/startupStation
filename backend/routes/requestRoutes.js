@@ -13,7 +13,7 @@ router.put('/:id/accept', auth,  acceptRequest);
 router.put('/:id/confirm/job-proposal', auth,  confirmJobProposal);
 router.put('/:id/confirm/invest-proposal', auth,  confirmInvestProposal);
 router.put('/:startupId/resign/:roleId', auth,  resignFromStartup);
-router.post('/:id/founder-req', founderRequest)
+router.post('/founder-req', auth, founderRequest)
 
 
 export default router;

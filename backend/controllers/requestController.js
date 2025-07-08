@@ -14,12 +14,25 @@ export const getMyRequests = async (req, res) => {
 
 export const sendJobRequest = async (req, res) => {
   const { startupId, desc, targetRoleId } = req.body;
-  const startup = await Startup.findById(startupId);
+  // Populate team and roles
+  const startup = await Startup.findById(startupId).populate({
+    path: 'teamId',
+    populate: { path: 'roles' }
+  });
   if (!startup) return res.status(404).json({ msg: 'Startup not found' });
 
   const founderId = startup.founderId;
+  // Find the role name safely
+  let roleName = '';
+  if (startup.teamId && Array.isArray(startup.teamId.roles)) {
+    const roleObj = startup.teamId.roles.find(
+      role => role._id.toString() === targetRoleId
+    );
+    roleName = roleObj ? roleObj.roleName : '';
+  }
+
   const request = await Request.create({
-    sender: req.user._id,
+    sender: req.user.id,
     receiver: founderId,
     type: 'job',
     category: 'job',
@@ -28,13 +41,13 @@ export const sendJobRequest = async (req, res) => {
     desc
   });
   const notification = await createNotification({
-    user: startup.founderId,
+    user: founderId,
     type: 'request',
     title: 'New Job Request',
-    message: `${req.user.name} sent you a job request for ${role}.`,
+    message: `${req.user.name} sent you a job request for ${roleName}.`,
     data: { requestId: request._id }
   });
-  sendNotification(startup.founderId, notification);
+  sendNotification(founderId, notification);
   res.status(201).json(request);
 };
 
@@ -45,7 +58,7 @@ export const sendInvestRequest = async (req, res) => {
 
   const founderId = startup.founderId;
   const request = await Request.create({
-    sender: req.user._id,
+    sender: req.user.id,
     receiver: founderId,
     type: 'invest',
     category: 'invest',
@@ -75,7 +88,7 @@ export const acceptRequest = async (req, res) => {
   const proposalType = request.type === 'job' ? 'job-proposal' : 'invest-proposal';
 
   const proposal = await Request.create({
-    sender: req.user._id,
+    sender: req.user.id,
     receiver: request.sender,
     type: proposalType,
     category: request.category,
@@ -99,19 +112,19 @@ export const acceptRequest = async (req, res) => {
 export const founderRequest = async (req, res) => {
   
   const { receiverId, requestType, startupId, targetRoleId }= req.body;
-  if (!requestType || requestType !== 'null' || !receiverId) return res.status(400).json({ msg: 'Invalid request' });
+  if (!requestType || requestType === 'null' || !receiverId) return res.status(400).json({ msg: 'Invalid request' });
   
 
   const proposalType = requestType === 'job' ? 'job-proposal' : 'invest-proposal';
 
   const proposal = await Request.create({
-    sender: req.params.id,
+    sender: req.user.id,
     receiver: receiverId,
     type: proposalType,
     category: requestType,
     startupId: startupId,
     targetRoleId: targetRoleId,
-    desc: `You are invited to ${request.category === 'job' ? 'join the team' : 'invest in the startup'}`
+    desc: `You are invited to ${requestType === 'job' ? 'join the team' : 'invest in the startup'}`
   });
 
   const notification = await createNotification({
@@ -137,7 +150,7 @@ export const confirmJobProposal = async (req, res) => {
     if (!role) return res.status(404).json({ msg: 'Role not found' });
     if (role.assignedTo) return res.status(400).json({ msg: 'Role already assigned' });
 
-    role.assignedTo = req.user._id;
+    role.assignedTo = req.user.id;
     let profile = await DevProfile.findOne({ user: userId });
     await team.save();
     if (profile) 

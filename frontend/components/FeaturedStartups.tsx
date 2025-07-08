@@ -4,10 +4,10 @@ export const FeaturedStartups = ()=>
 {
     return(
         <>
-         <section className="py-20 bg-white">
+         <section className="py-20 ">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Featured Startups</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-violet-900 mb-4">Featured Startups</h2>
             <p className="text-xl text-gray-600">Discover innovative companies shaping the future</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -17,8 +17,8 @@ export const FeaturedStartups = ()=>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">TechFlow</h3>
                 <p className="text-gray-600 mb-4">Revolutionary AI-powered workflow automation platform transforming.</p>
                 <div className="flex items-center justify-between">
-                  <span className="bg-yellow-100 text-primary-800 px-3 py-1 rounded-full text-sm font-medium">AI/ML</span>
-                  <button className="text-blue-400 hover:text-primary-700 font-medium ">Learn More</button>
+                  <span className="bg-purple-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">AI/ML</span>
+                  <button className="text-gray-700 hover:text-blue-700  ">Learn more</button>
                 </div>
               </div>
             </div>
@@ -28,8 +28,8 @@ export const FeaturedStartups = ()=>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">EcoTech</h3>
                 <p className="text-gray-600 mb-4">Sustainable technology solutions for carbon-neutral manufacturing processes.</p>
                 <div className="flex items-center justify-between">
-                  <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">GreenTech</span>
-                  <button className="text-blue-400 hover:text-primary-700 font-medium">Learn More</button>
+                  <span className="bg-purple-100  px-3 py-1 rounded-full text-sm font-medium">GreenTech</span>
+                  <button className="text-gray-700 hover:text-blue-700">Learn more</button>
                 </div>
               </div>
             </div>
@@ -39,8 +39,8 @@ export const FeaturedStartups = ()=>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">HealthSync</h3>
                 <p className="text-gray-600 mb-4">Digital health platform connecting patients with healthcare providers seamlessly.</p>
                 <div className="flex items-center justify-between">
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">HealthTech</span>
-                  <button className="text-blue-400 hover:text-primary-700 font-medium">Learn More
+                  <span className="bg-purple-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">HealthTech</span>
+                  <button className="text-gray-700 hover:text-blue-700">Learn more
     
     </button>
                 </div>
@@ -52,8 +52,8 @@ export const FeaturedStartups = ()=>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">FinanceNext</h3>
                 <p className="text-gray-600 mb-4">Next-generation blockchain-based financial services for the modern economy.</p>
                 <div className="flex items-center justify-between">
-                  <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">FinTech</span>
-                  <button className="text-blue-400 hover:text-primary-700 font-medium flex items-center">Learn More</button>
+                  <span className="bg-purple-100  px-3 py-1 rounded-full text-sm font-medium">FinTech</span>
+                  <button className="text-gray-700 hover:text-blue-700">Learn more</button>
                 </div>
               </div>
             </div>
@@ -63,8 +63,8 @@ export const FeaturedStartups = ()=>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">DataViz</h3>
                 <p className="text-gray-600 mb-4">Advanced data visualization platform making complex analytics accessible to everyone.</p>
                 <div className="flex items-center justify-between">
-                  <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-md text-sm font-medium">Analytics</span>
-                  <button className="text-blue-400 hover:text-primary-700 font-medium flex items-center">Learn More</button>
+                  <span className="bg-purple-100  px-3 py-1 rounded-md text-sm font-medium">Analytics</span>
+                  <button className="text-gray-700 hover:text-blue-700 flex items-center">Learn more</button>
                 </div>
               </div>
             </div>
@@ -74,8 +74,8 @@ export const FeaturedStartups = ()=>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">EduTech</h3>
                 <p className="text-gray-600 mb-4">Personalized learning experiences powered by adaptive AI technology.</p>
                 <div className="flex items-center justify-between">
-                  <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-md text-sm font-medium">EdTech</span>
-                  <button className="text-blue-400 hover:text-primary-700 font-medium">Learn More</button>
+                  <span className="bg-purple-100  px-3 py-1 rounded-md text-sm font-medium">EdTech</span>
+                  <button className="text-gray-700 hover:text-blue-700 font-medium">Learn more</button>
                 </div>
               </div>
             </div>

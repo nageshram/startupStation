@@ -2,22 +2,18 @@ import { Server } from 'socket.io'
 let io;
 
 const initSocketServer = (server) => {
-  io = new Server(server, {
-    cors: {
-      origin: '*'
-    }
-  });
+  io = server;
 
   io.on("connection", (socket) => {
-    console.log("User connected: " + socket.id);
+    //console.log("User connected: " + socket.id);
 
-    socket.on("send-message", (data) => {
-      const { chatId, sender, receiver, text } = data;
-      io.to(receiver.toString()).emit("receive-message", data);
+    socket.on("sendMessage", (data) => { // <--- match frontend
+      const { receiver } = data;
+      io.to(receiver.toString()).emit("newMessage", data); // <--- match frontend
     });
 
     socket.on("join", (userId) => {
-      socket.join(userId.toString());
+      socket.join(userId);
     });
 
     socket.on("mark-seen", ({ chatId, userId }) => {
@@ -25,7 +21,7 @@ const initSocketServer = (server) => {
     });
 
     socket.on("disconnect", () => {
-      console.log("User disconnected: " + socket.id);
+      //console.log("User disconnected: " + socket.id);
     });
   });
 };

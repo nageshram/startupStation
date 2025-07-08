@@ -1,14 +1,14 @@
 import express from 'express'
 const router = express.Router();
-import {sendMessage, getMessagesForChat, searchUserChats, getMessagesWithUser, markAsSeen, getUserChatList } from '../controllers/messageController.js'
+import {sendMessage, getMessagesForChat, getMessagesWithUser, markAsSeen, getUserChatList, searchUsers } from '../controllers/messageController.js'
 import auth  from '../middlewares/auth.js' 
 
 router.post('/', auth,  sendMessage);
 router.get('/:chatId', auth,  getMessagesForChat);
-router.get('/', auth,  searchUserChats);
-router.get('/with/:userId', auth,  getMessagesWithUser);
+router.get('/with/:username', auth,  getMessagesWithUser);
 router.put('/seen/:chatId', auth,  markAsSeen);
-router.get('/:userId/chatlist', auth,  getUserChatList);
+router.get('/contact/chatlist', auth,  getUserChatList);
+router.get('/search/users', auth,  searchUsers); // new
 
 export default router;
 

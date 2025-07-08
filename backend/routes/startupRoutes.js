@@ -5,16 +5,17 @@ import {
   updateStartup,
   deleteStartup,
   addInvestor,
-  addRole
+  addRole,
+  getAllStartups
 } from '../controllers/startupController.js';
 
 const router = express.Router();
 
 router.post('/create', createStartup);
 router.get('/:id', getStartup);
+router.get('/', getAllStartups);
 router.put('/:id', updateStartup);
 router.delete('/:id', deleteStartup);
-
 router.post('/add-investor', addInvestor);
 router.post('/add-role', addRole);
 

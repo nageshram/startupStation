@@ -1,12 +1,19 @@
-import { uploadImage } from '../controllers/uploadController.js';
+import { uploadImage, getImage } from '../controllers/uploadController.js';
 import multer from 'multer';
-import express from 'express'
-const router = express.Router();
+import express from 'express';
 import path from 'path';
+const router = express.Router();
 
+const baseUploadDir = path.join('backend', 'uploads');
 
+// Dynamic storage based on field
 const storage = multer.diskStorage({
-  destination: './uploads/',
+  destination: (req, file, cb) => {
+    let folder = 'profile_pics';
+    if (req.body.type === 'startup') folder = 'startup_pics';
+    const uploadDir = path.join(baseUploadDir, folder);
+    cb(null, uploadDir);
+  },
   filename: (req, file, cb) => {
     cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   },
@@ -21,18 +28,18 @@ const fileFilter = (req, file, cb) => {
     cb(null, true);
   } else {
     cb(new Error('Only images are allowed'));
-    
   }
 };
 
-// Multer upload instance
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: fileFilter,
 });
 
-// Route: POST /api/upload
+router.get('/:folder/:id', getImage);
+
+// POST /api/upload?type=profile or type=startup
 router.post('/', upload.single('image'), uploadImage);
 
 export default router;

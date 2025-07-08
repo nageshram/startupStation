@@ -1,4 +1,5 @@
-import mongoose from "mongoose"  
+import mongoose from "mongoose"
+import bcrypt from "bcrypt"
 
 const userSchema = new mongoose.Schema({
     name:{
@@ -11,7 +12,7 @@ const userSchema = new mongoose.Schema({
         unique:true
     },
     designation: { type: String,
-         enum: ['Dev', 'Founder', 'Investor', 'Admin'], 
+         enum: ['Dev', 'Founder', 'Investor', 'Admin'] , 
          required: true
          },
     phno:{
@@ -28,7 +29,6 @@ const userSchema = new mongoose.Schema({
     },
     photo:{
         type:String,
-        required:true
     },
     address:{
         type:String,

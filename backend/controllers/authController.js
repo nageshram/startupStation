@@ -6,46 +6,71 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 
 const generateAccessToken = (user) => {
-  return jwt.sign({ id: user._id, username: user.username }, JWT_SECRET, { expiresIn: '15m' });
+  return jwt.sign({ id: user._id, username: user.username , role:user.designation }, JWT_SECRET, { expiresIn: '2h' });
 };
 
 const generateRefreshToken = (user) => {
-  return jwt.sign({ id: user._id, username: user.username }, JWT_REFRESH_SECRET, { expiresIn: '7d' });
+  return jwt.sign({ id: user._id, username: user.username, role:user.designation }, JWT_REFRESH_SECRET, { expiresIn: '7d' });
 };
 
 export const signup = async (req, res) => {
   try {
+    //console.log("incoming request : "+res.body);
     const user = new User(req.body);
     const refreshToken = generateRefreshToken(user);
     user.refreshToken = refreshToken;
     await user.save();
     const accessToken = generateAccessToken(user);
-    res.status(201).json({ accessToken, refreshToken });
-  } catch (err) {
+    
+    res.cookie('accessToken', accessToken, {
+    httpOnly:true,
+    secure:false,
+    sameSite:'lax',
+    maxAge:15*60*1000
+  }).cookie('refreshToken', refreshToken,{
+    httpOnly:true,
+    secure:false,
+    sameSite:'lax',
+    maxAge:7*24*60*60*1000
+  }).status(200).json({"message":"Signup Successfull!"});
+
+} 
+  
+  catch (err) {
     res.status(400).json({ message: 'Signup failed', error: err.message });
   }
 };
 
 export const login = async (req, res) => {
-  const { username, password } = req.body;
-  const user = await User.findOne({ username }).select('+password +refreshToken');
+  const { email, password } = req.body;
+  const user = await User.findOne({ email }).select('+password +refreshToken');
 
   if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
   const isMatch = await user.matchPassword(password);
-  if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
+  if (!isMatch) return res.status(401).json({ message: 'Invalid credentials password not Matched' });
 
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
   user.refreshToken = refreshToken;
   await user.save();
 
-  res.json({ accessToken, refreshToken });
+  res.cookie('accessToken', accessToken, {
+    httpOnly:true,
+    secure:false,
+    sameSite:'lax',
+    maxAge:15*60*1000
+  }).cookie('refreshToken', refreshToken,{
+    httpOnly:true,
+    secure:false,
+    sameSite:'lax',
+    maxAge:7*24*60*60*1000
+  }).status(200).json({"message":"Login Successful"});
 };
 
 //receive refresh token to allocate new access token
 export const refreshToken = async (req, res) => {
-  const { refreshToken } = req.body;
+  const refreshToken  = req.cookies.refreshToken;
   if (!refreshToken) return res.status(401).json({ message: 'Refresh token missing' });
 
   try {
@@ -60,21 +85,45 @@ export const refreshToken = async (req, res) => {
     const newRefreshToken = generateRefreshToken(user);
     user.refreshToken = newRefreshToken;
     await user.save();
+   
+  res.cookie('accessToken', newAccessToken, {
+    httpOnly:true,
+    secure:false,
+    sameSite:'lax',// change it Strict after deployment over HTTPS
+    maxAge:15*60*1000
+  }).cookie('refreshToken', newRefreshToken,{
+    httpOnly:true,
+    secure:false,
+    sameSite:'lax',
+    maxAge:7*24*60*60*1000
+  })
+  .json({"message":"Refresh Token Renewed"});
 
-    res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
   } catch (err) {
     res.status(403).json({ message: 'Token expired or invalid' });
   }
 };
 
 export const logout = async (req, res) => {
-  const { username } = req.body;
-  const user = await User.findOne({ username });
+   
+  const user = await User.findById(req.user.id);
   if (user) {
     user.refreshToken = null;
     await user.save();
+
+    res.clearCookie('accessToken', req.cookies.accessToken, {
+    httpOnly:true,
+    secure:false,
+    sameSite:'lax'});
+
+   res.clearCookie('refreshToken', refreshToken,{
+    httpOnly:true,
+    secure:false,
+    sameSite:'lax'
+  });
+     res.status(200).json({ message: 'Logged out successfully' });
   }
-  res.json({ message: 'Logged out successfully' });
+ 
 };
 
 
@@ -102,7 +151,7 @@ export const sendOtp = async (req, res) => {
       <p>This OTP will expire in 10 minutes.</p>
     `;
 
-    await sendEmail(user.email, 'Your OTP for Password Reset', message);
+    await sendEmail(user.email, 'Startup stn - Your OTP for Password Reset', message);
 
     res.status(200).json({ message: 'OTP sent to your email' });
 
@@ -138,5 +187,10 @@ export const resetPasswordWithOtp = async (req, res) => {
     console.error(err);
     res.status(500).json({ message: 'Failed to reset password' });
   }
+};
+
+export const loginStatus = async (req, res) => {
+  // If auth middleware passes, user is logged in
+  res.json({ loggedIn: true, user: req.user });
 };
 

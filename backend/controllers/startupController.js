@@ -35,7 +35,7 @@ export const getStartup = async (req, res) => {
       .populate('documentIds')
       .populate('taskGroup')
       .populate('requestGroup')
-      .populate('teamId');
+      .populate('teamId').populate('teamId.roles');
 
     if (!startup) return res.status(404).json({ message: 'Startup not found' });
 
@@ -44,6 +44,26 @@ export const getStartup = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const getAllStartups = async (req, res) => {
+  try {
+    const startup = await Startup.find()
+      .populate('founderId', '-password')
+      .populate('investors', '-password')
+      .populate('documentIds')
+      .populate('taskGroup')
+      .populate('requestGroup')
+      .populate('teamId').populate('teamId.roles');
+
+    if (!startup) return res.status(404).json({ message: 'no Startups found' });
+    //console.log(startup);
+    res.status(200).json(startup);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
 
 // Update startup basic details
 export const updateStartup = async (req, res) => {

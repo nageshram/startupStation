@@ -1,0 +1,530 @@
+import React, { useEffect, useState } from 'react';
+import { authFetch } from '../utils/authFetch';
+import { MessageCircle, MessageSquare } from 'lucide-react'
+
+const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
+  const [feed, setFeed] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [results, setResults] = useState(null); // null means no search, object means search active
+  const [activeTab, setActiveTab] = useState(''); // 'startups' | 'devs' | 'Investors'
+  const [selectedRoles, setSelectedRoles] = useState({});
+  const [remarks, setRemarks] = useState({});
+
+  useEffect(() => {
+    authFetch('http://localhost:5000/api/startup/', { 
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+       })
+      .then((res) => res.json())
+      .then(setFeed)
+      .catch(() => setErrors('Failed to load feed'));
+  }, []);
+
+  // Handle search
+  const handleSearch = async (e) => {
+    if (e.key === 'Enter') {
+      try {
+        const res = await authFetch(`http://localhost:5000/api/search/${searchTerm}`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        setResults(data);
+
+        // Set first non-empty tab as active
+        if (data.startups && data.startups.length > 0) setActiveTab('startups');
+        else if (data.devs && data.devs.length > 0) setActiveTab('devs');
+        else if (data.Investors && data.Investors.length > 0) setActiveTab('Investors');
+        else setActiveTab('');
+      } catch (err) {
+        setErrors('Search failed');
+      }
+    }
+  };
+
+  // Founder proposal function
+  const founderRequest = async ({ receiverId, requestType, startupId, targetRoleId }) => {
+    try {
+      const body = { receiverId, requestType, startupId, targetRoleId };
+      const res = await authFetch('http://localhost:5000/api/requests/founder-req', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error();
+      alert('Proposal sent successfully');
+    } catch {
+      setErrors('Failed to send proposal');
+    }
+  };
+
+  const sendInvestRequest = async (startupId, bid) => {
+    try {
+      const res = await authFetch('http://localhost:5000/api/requests/invest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ startupId, bid }),
+      });
+      if (!res.ok) throw new Error();
+      alert('Investment request sent!');
+    } catch {
+      setErrors('Failed to send investment proposal');
+    }
+  };
+
+  const sendJobRequest = async (startupId, remarks, roleId) => {
+    try {
+      const body = { startupId, remarks, roleId };
+      const res = await authFetch('http://localhost:5000/api/requests/job', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error();
+      alert('Job request sent!');
+    } catch {
+      setErrors('Failed to send job request');
+    }
+  };
+
+  // Clear search
+  const handleClear = () => {
+    setResults(null);
+    setActiveTab('');
+    setSearchTerm('');
+  };
+
+  // --- UI ---
+  return (
+    <div className="space-y-6">
+      {/* Search Bar */}
+      <div className="bg-white p-4 rounded shadow flex flex-col gap-2">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={handleSearch}
+            className="w-full border  border-gray-300 rounded p-2 focus:outline-pink-500"
+            placeholder="Search for devs, startups, Investors..."
+          />
+          {results && (
+            <button
+              onClick={handleClear}
+              className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+
+        {/* Tabs for search results */}
+        {results && (
+          <div className="flex gap-2 mt-2">
+            {results.startups?.length > 0 && (
+              <button
+                className={`px-3 py-1 rounded ${activeTab === 'startups' ? 'bg-pink-600 text-white' : 'bg-gray-100'}`}
+                onClick={() => setActiveTab('startups')}
+              >
+                Startups ({results.startups.length})
+              </button>
+            )}
+            {results.devs?.length > 0 && (
+              <button
+                className={`px-3 py-1 rounded ${activeTab === 'devs' ? 'bg-pink-600 text-white' : 'bg-gray-100'}`}
+                onClick={() => setActiveTab('devs')}
+              >
+                Devs ({results.devs.length})
+              </button>
+            )}
+            {results.investors?.length > 0 && (
+              <button
+                className={`px-3 py-1 rounded ${activeTab === 'investors' ? 'bg-pink-600 text-white' : 'bg-gray-100'}`}
+                onClick={() => setActiveTab('investors')}
+              >
+                Investors ({results.investors.length})
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Search Results Rendering */}
+      {results ? (
+        <div>
+          {/* --- Startups Tab --- */}
+          {activeTab === 'startups' && (
+            <div className="space-y-4">
+              {results.startups.map((startup, idx) => (
+                <div key={startup._id} className="bg-white rounded shadow p-4 flex items-center flex-row gap-4">
+                  <img src={startup.photo ? 'http://localhost:5000/api/upload/startup_pics/' + startup.photo : '/default.jpg'} className="w-16 h-16 rounded object-cover" alt="" />
+                  <div className="flex-1">
+                    <div className="font-bold text-lg">{startup.name}</div>
+                    <div className="text-xs text-gray-500">{startup.status}</div>
+                    <div className="text-sm text-gray-500">{startup.desc}</div>
+                     <div className="mb-2">
+                    <span className="text-xs font-semibold text-gray-500">Open Roles: </span>
+                    <span className="text-xs text-pink-600">{startup.openedRoles?.join(', ')}</span>
+                  </div>
+                  <div className="text-xs text-gray-500">{startup.founderId.name}</div>
+                    
+                  </div>
+                  {/* --- Dev: Send Job Request --- */}
+                  {user.designation === 'Dev' && (
+                    <div className="flex flex-col gap-2">
+                      <select
+                        className="border rounded p-1 text-sm"
+                        value={selectedRoles[startup._id] || ''}
+                        onChange={e =>
+                          setSelectedRoles({ ...selectedRoles, [startup._id]: e.target.value })
+                        }
+                      >
+                        <option value="">Select Role</option>
+                        {startup.teamId?.roles?.map((role) => (
+                          <option key={role._id} value={role._id}>
+                            {role.roleName}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        type="text"
+                        className="border border-gray-300 rounded p-1 text-sm"
+                        placeholder="Remarks (required)"
+                        value={remarks[startup._id] || ''}
+                        onChange={e => setRemarks({ ...remarks, [startup._id]: e.target.value })}
+                      />
+                      <button
+                        onClick={() =>
+                          sendJobRequest(startup._id, remarks[startup._id], selectedRoles[startup._id])
+                        }
+                        className="px-3 py-1 bg-pink-600 text-white rounded hover:bg-pink-700"
+                        disabled={!selectedRoles[startup._id] || !remarks[startup._id]}
+                      >
+                        Send Job Request
+                      </button>
+                    </div>
+                  )}
+                  {/* --- Investor: Send Invest Request --- */}
+                  {user.designation === 'Investor' && (
+                    <div className="flex flex-col gap-2">
+                      <input
+                        type="text"
+                        className="border border-gray-300 rounded p-1 text-sm"
+                        placeholder="Enter your bid (required)"
+                        value={remarks[startup._id] || ''}
+                        onChange={e => setRemarks({ ...remarks, [startup._id]: e.target.value })}
+                      />
+                      <button
+                        onClick={() =>
+                          sendInvestRequest(startup._id, remarks[startup._id])
+                        }
+                        className="px-3 py-1 bg-pink-600 text-white rounded hover:bg-pink-700"
+                        disabled={!remarks[startup._id]}
+                      >
+                        Offer funding
+                      </button>
+                    </div>
+                  )}
+                  {/* --- Founder: Only Message Founder (not own startup) --- */}
+                  {user.designation === 'Founder' && startup.founderId?.username !== user.username && (
+                    <button
+                      onClick={() =>
+                        setActiveChatUser({
+                          username: startup.founderId.username,
+                          name: startup.founderId.name,
+                          photo: startup.founderId.photo,
+                          designation: startup.founderId.designation,
+                        })
+                      }
+                      className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    >
+                      Message Founder
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+{activeTab === 'founders' && (
+  <div className="space-y-4">
+    {results.founders.map((founder) => (
+      <div key={founder._id} className="bg-white rounded shadow p-4 flex items-center gap-4">
+        <img
+          src={founder.photo ? 'http://localhost:5000/api/upload/profile_pics/' + founder.photo : '/default.jpg'}
+          onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/profile_pics/default.jpg'; }}
+          className="w-14 h-14 rounded-full object-cover"
+          alt=""
+        />
+        <div className="flex-1">
+          <div className="font-semibold">{founder.name} <span className="text-xs text-gray-500">@{founder.username}</span></div>
+        </div>
+        <button
+        onClick={() => setActiveChatUser(founder)}
+          className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Message
+        </button>
+      </div>
+    ))}
+  </div>
+)}
+
+          {/* --- Investors Tab --- */}
+          {activeTab === 'investors' && (
+            <div className="space-y-4">
+              {results.investors.map((inv) => (
+                <div key={inv._id} className="bg-white rounded shadow p-4 flex items-center flex-col gap-4">
+                  <div className="flex flex-row justify-start gap-2">
+                    <div>
+                  <img src={ inv.photo ? 'http://localhost:5000/api/upload/profile_pics/' + inv.photo : '/default.jpg'} onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/profile_pics/default.jpg'; }} className="w-14 h-14 rounded-full object-cover" alt="" />
+                      </div>
+                  <div className="flex-1">
+                    <div className="font-semibold">{inv.name}  <br /> <span className="text-xs text-gray-500">@{inv.username}</span></div>
+                  </div>
+                  </div>
+                  
+                  {/* Dev/Investor: Message */}
+                  {(user.designation === 'Dev' || user.designation === 'Investor') && (
+                    <button
+                      onClick={() => setActiveChatUser(inv)}
+                      className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    >
+                      Message
+                    </button>
+                  )}
+                  {/* Founder: Message & Send Invest Proposal */}
+                  {user.designation === 'Founder' && (
+                    <>
+                    <div className="flex flex-row gap-1" >
+                      <button
+                        onClick={() => setActiveChatUser(inv)}
+                        className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                      >
+                        Message
+                      </button>
+                      <button
+                        onClick={() =>
+                          founderRequest({
+                            receiverId: inv._id,
+                            requestType: 'invest',
+                            startupId: user.startupId?._id
+                          })
+                        }
+                        className="px-3 py-1 bg-pink-600 text-white rounded hover:bg-pink-700"
+                      >
+                        Invite Investor
+                      </button>
+                      </div>
+                    </>
+                    
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+      
+
+          {/* --- Devs Tab (already handled) --- */}
+          {activeTab === 'devs' && (
+            <div className="space-y-4">
+              {results.devs.map((dev) => (
+                <div key={dev._id} className="bg-white rounded shadow p-4 flex flex-col items-center gap-4">
+                  <div className="flex flex-row gap-2">
+                  <div>
+                  <img src={ dev.photo ? "http://localhost:5000/api/upload/profile_pics/"+dev.photo : '/default.jpg'} onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/profile_pics/default.jpg'; }} className="w-14 h-14 rounded-full object-cover" alt="" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-semibold flex justify justify-between"><span> {dev.name}</span>
+                    
+                    <button
+                    onClick={() => setActiveChatUser(dev)}
+                    className="   text-white rounded"
+                  >
+                    <MessageSquare className='text-gray-600 hover:text-gray-400' />
+                  </button>
+                    
+                    </div>
+                    <span className='text-sm text-gray-600'>@{user.username}</span>
+                    <div className="text-xs text-gray-600">Techie</div>
+                    <div className="text-xs text-gray-500">Skills: {dev.skills?.join(', ')}</div>
+                    <div className="text-xs text-gray-400">{dev.desc}</div>
+                  </div>
+                </div>
+                  <div className="flex items-center gap-2">
+                  
+                  {user.designation === 'Founder' && user.startupId?.teamId?.roles?.length > 0 && (
+                    <div className="flex flex-row  gap-2">
+                      <select
+                        className="border border-gray-300 rounded p-1 text-sm"
+                        value={selectedRoles[dev._id] || ''}
+                        onChange={e =>
+                          setSelectedRoles({ ...selectedRoles, [dev._id]: e.target.value })
+                        }
+                      >
+                        <option value="">Select Role</option>
+                        {user.startupId.teamId.roles.map((role) => (
+                          <option key={role._id} value={role._id}>
+                            {role.roleName}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        onClick={() =>
+                          founderRequest({
+                            receiverId: dev._id,
+                            requestType: 'job',
+                            startupId: user.startupId._id,
+                            targetRoleId: selectedRoles[dev._id] || null,
+                          })
+                        }
+                        className="px-3 py-1 md:text-[14px] bg-pink-600 text-white rounded hover:bg-pink-700"
+                        disabled={!selectedRoles[dev._id]}
+                      >
+                      Offer job
+                      </button>
+                    </div>
+                  )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+      ) : (
+        // Default: Show startup feed
+        <div className="grid md:grid-cols-1 gap-6">
+          {[...feed]
+            .reverse()
+            .filter(
+              startup =>
+                !(
+                  user.designation === 'Founder' &&
+                  startup.founderId?.username === user.username
+                )
+            )
+            .map((startup, idx) => (
+              <div
+                key={idx}
+                className="bg-white rounded-xl shadow-lg p-0 flex flex-col border border-gray-200 max-w-md mx-auto"
+                style={{
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
+                  marginBottom: "2rem",
+                  overflow: "hidden",
+                }}
+              >
+                {/* Header: Founder Info */}
+                <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 bg-gray-50">
+                  <img
+                    src={  'http:/localhost:5000/api/upload/profile_pics/'+ startup.founderId?.photo || "/default.jpg"} onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/profile_pics/default.jpg'; }}
+                    alt="Founder"
+                    className="w-10 h-10 rounded-full object-cover border"
+                  />
+                  <div>
+                    <div className="font-semibold text-gray-800 text-sm">{startup.founderId?.name}</div>
+                    <div className="text-xs text-gray-500">@{startup.founderId?.username}</div>
+                  </div>
+                  <span className="ml-auto text-xs px-2 py-1 bg-green-100 text-green-700 rounded">
+                    {startup.status}
+                  </span>
+                </div>
+
+                {/* Startup Image */}
+                <div className="w-full h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
+                  <img
+                    src={startup.photo ? 'http://localhost:5000/api/upload/startup_pics/' + startup.photo : '/default.jpg'}
+                    onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/profile_pics/default.jpg'; }}
+                    className="object-cover w-full h-full"
+                    alt="startup"
+                  />
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 flex flex-col px-4 py-3">
+                  <h3 className="text-lg font-bold text-gray-800 mb-1">{startup.name}</h3>
+                  <p className="text-sm text-gray-600 mb-2 line-clamp-3">{startup.desc}</p>
+                  <div className="mb-2">
+                    <span className="text-xs font-semibold text-gray-500">Open Roles: </span>
+                    <span className="text-xs text-pink-600">{startup.openedRoles?.join(', ')}</span>
+                  </div>
+   {  user.designation !== 'Investor' && user.designation !== 'Admin' && user.designation !== 'Founder' && (
+                <select
+                  className="border rounded p-1 mb-2 w-full text-sm"
+                  value={selectedRoles[idx] || ''}
+                  onChange={e =>
+                    setSelectedRoles({ ...selectedRoles, [idx]: e.target.value })
+                  }
+                >
+                  <option value="">Select Role</option>
+                  {startup.teamId?.roles?.map((role) => (
+                    <option key={role._id} value={role._id}>
+                      {role.roleName}
+                    </option>
+                  ))}
+                </select>
+)}
+                {/* Remarks/Bid input */}
+                {user.designation !== 'Investor' && user.designation !== 'Admin' && user.designation !== 'Founder' && (
+                  <input
+                    type="text"
+                    className="border border-gray-300 rounded p-1 mb-2 w-full text-sm"
+                    placeholder="Add remarks for job (required)"
+                    value={remarks[idx] || ''}
+                    onChange={e => setRemarks({ ...remarks, [idx]: e.target.value })}
+                  />
+                )}
+                {user.designation === 'Investor' && (
+                  <input
+                    type="text"
+                    className="border border-gray-300 rounded p-1 mb-2 w-full text-sm"
+                    placeholder="Enter your bid (required)"
+                    value={remarks[idx] || ''}
+                    onChange={e => setRemarks({ ...remarks, [idx]: e.target.value })}
+                  />
+                )}
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center justify-between px-4 py-2 border-t border-gray-100 bg-gray-50">
+                <button
+                  onClick={() =>
+                    setActiveChatUser({
+                      username: startup.founderId?.username,
+                      name: startup.founderId?.name,
+                      photo: startup.founderId?.photo,
+                      designation: startup.founderId?.designation,
+                    })
+                  }
+                  className="flex-1 mr-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm transition"
+                >
+                  Message Founder
+                </button>
+                {user.designation !== 'Admin' && user.designation !== 'Founder' && (
+                  <button
+                    className="flex-1 px-3 py-1 bg-pink-600 text-white rounded hover:bg-pink-700 text-sm transition"
+                    onClick={() => {
+                      if (user.designation === 'Investor') {
+                        sendInvestRequest(startup._id, remarks[idx]);
+                      } else {
+                        sendJobRequest(startup._id, remarks[idx], selectedRoles[idx]);
+                      }
+                    }}
+                    disabled={
+                      (user.designation !== 'Investor' && (!selectedRoles[idx] || !remarks[idx])) ||
+                      (user.designation === 'Investor' && !remarks[idx])
+                    }
+                  >
+                    Send{user.designation === 'Investor' ? ' invest ' : ' job '}Request
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default StartupFeed;

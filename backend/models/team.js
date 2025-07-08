@@ -6,7 +6,7 @@ const roleSchema = new mongoose.Schema({
 }, { _id: true });
 
 const teamSchema = new mongoose.Schema({
-  startupId: { type: mongoose.Schema.Types.ObjectId, ref: 'Startup', required: true },
+  startupId: { type: mongoose.Schema.Types.ObjectId, ref: 'Startup' },
   roles: [roleSchema]
 });
 

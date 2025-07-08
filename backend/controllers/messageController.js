@@ -2,7 +2,8 @@ import Message from '../models/message.js'
 import User from '../models/user.js'
 
 export const sendMessage = async (req, res) => {
-  const { chatId, sender, receiver, text } = req.body;
+  const { chatId, receiver, text } = req.body;
+  const sender = req.user.username;
   const message = await Message.create({ chatId, sender, receiver, text });
   res.status(201).json(message);
 };
@@ -13,99 +14,76 @@ export const getMessagesForChat = async (req, res) => {
   res.json(messages);
 };
 
-export const searchUserChats = async (req, res) => {
-  const userId = req.user._id;
-  const chats = await Message.aggregate([
-    {
-      $match: {
-        $or: [
-          { sender: userId },
-          { receiver: userId }
-        ]
-      }
-    },
-    {
-      $group: {
-        _id: "$chatId",
-        lastMessage: { $last: "$text" },
-        updatedAt: { $last: "$createdAt" },
-        seen: { $last: "$seen" }
-      }
-    },
-    { $sort: { updatedAt: -1 } }
-  ]);
-
-  res.json(chats);
-};
-
 export const getMessagesWithUser = async (req, res) => {
-  const userId = req.user._id;
-  const targetId = req.params.userId;
+  const user = req.user.username;
+  const target = req.params.username;
 
-  const messages = await Message.find({
-    $or: [
-      { sender: userId, receiver: targetId },
-      { sender: targetId, receiver: userId }
-    ]
-  }).sort({ createdAt: 1 });
+  const chatId = [user, target].sort().join('_');
+  const messages = await Message.find({ chatId }).sort({ createdAt: 1 });
 
   // Mark all messages received by current user as seen
-  await Message.updateMany({ sender: targetId, receiver: userId, seen: false }, { $set: { seen: true } });
+  await Message.updateMany({ chatId, receiver: user, seen: false }, { $set: { seen: true } });
 
   res.json(messages);
 };
 
 export const markAsSeen = async (req, res) => {
   const { chatId } = req.params;
-  const userId = req.user._id;
+  const username = req.user.username;
 
-  await Message.updateMany({ chatId, receiver: userId, seen: false }, { $set: { seen: true } });
+  await Message.updateMany({ chatId, receiver: username, seen: false }, { $set: { seen: true } });
   res.json({ message: 'Messages marked as seen.' });
 };
 
 export const getUserChatList = async (req, res) => {
-  const userId = req.user._id;
+  //console.log("HIT /chatlist"); // <--- Should always print if endpoint is hit
+  const username = req.user.username;
 
+  //console.log("Current user for chatlist:", username); // DEBUG
   const chats = await Message.aggregate([
     {
       $match: {
-        $or: [{ sender: userId }, { receiver: userId }]
+        $or: [{ sender: username }, { receiver: username }]
       }
     },
     {
       $addFields: {
+        chatKey: {
+          $cond: [
+            { $gt: ["$sender", "$receiver"] },
+            { $concat: ["$receiver", "_", "$sender"] },
+            { $concat: ["$sender", "_", "$receiver"] }
+          ]
+        },
         otherUser: {
           $cond: [
-            { $eq: ["$sender", userId] },
+            { $eq: ["$sender", username] },
             "$receiver",
             "$sender"
           ]
         }
       }
     },
-    {
-      $sort: { createdAt: -1 }
-    },
+    { $sort: { createdAt: -1 } },
     {
       $group: {
-        _id: "$otherUser",
+        _id: "$chatKey",
         lastMessage: { $first: "$text" },
-        seen: { $first: "$seen" },
+        seen: { $first: { $cond: [{ $eq: ["$receiver", username] }, "$seen", true] } },
         chatId: { $first: "$chatId" },
-        updatedAt: { $first: "$createdAt" }
+        updatedAt: { $first: "$createdAt" },
+        otherUser: { $first: "$otherUser" }
       }
     },
     {
       $lookup: {
         from: "users",
-        localField: "_id",
-        foreignField: "_id",
+        localField: "otherUser",
+        foreignField: "username",
         as: "userInfo"
       }
     },
-    {
-      $unwind: "$userInfo"
-    },
+    { $unwind: "$userInfo" },
     {
       $project: {
         chatId: 1,
@@ -113,28 +91,24 @@ export const getUserChatList = async (req, res) => {
         seen: 1,
         updatedAt: 1,
         user: {
-          _id: "$userInfo._id",
+          username: "$userInfo.username",
           name: "$userInfo.name",
           photo: "$userInfo.photo",
           designation: "$userInfo.designation"
         }
       }
     },
-    {
-      $sort: { updatedAt: -1 }
-    }
+    { $sort: { updatedAt: -1 } }
   ]);
 
+ //console.log( "Chats found:"+chats); // DEBUG
   res.json(chats);
 };
 
-/*
-
-Each object contains:
-chatId
-lastMessage
-seen
-updatedAt
-user: { _id, name, photo, designation }
-
-*/
+export const searchUsers = async (req, res) => {
+  const { q } = req.query;
+  const users = await User.find({
+    username: { $regex: q, $options: 'i' }
+  }).select('username name photo designation');
+  res.json(users);
+};

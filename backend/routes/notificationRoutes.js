@@ -4,7 +4,7 @@ import {getUserNotifications, markAsSeen, clearAllNotifications } from '../contr
 import auth from '../middlewares/auth.js';
 
 router.get('/', auth, getUserNotifications);
-router.put('/:id/seen', auth, markAsSeen);
+router.put('/seen', auth, markAsSeen);
 router.delete('/clear', auth, clearAllNotifications);
 
 export default router;
