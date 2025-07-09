@@ -2,7 +2,7 @@ import { Link } from "react-router-dom"
 
 const Sidebar = ( {user} ) =>
 {
-    //const [user, setUser] = useState(user);
+    if(!user) return null;
 
     return(
         <>
