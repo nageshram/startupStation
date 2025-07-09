@@ -11,6 +11,7 @@ import HomePage from '../pages/HomePage.tsx'
 import ProtectedRoute from '../components/ProtectedRoute.tsx';
 import UpdateProfile from '../pages/UpdateProfile.tsx';
 import Dashboard from '../pages/Dashboard.tsx'
+import Requests from '../components/Requests.tsx';
 
 function App() {
   
@@ -44,6 +45,7 @@ function App() {
         >
 
           <Route path='' element={ <UpdateProfile/> } />
+          <Route path='requests' element ={<Requests /> } />
 
           </Route>
           

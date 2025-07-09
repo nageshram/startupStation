@@ -26,6 +26,7 @@ const Sidebar = ( {user} ) =>
         <div className="Links flex flex-col justify-center items-center">
             <ul className="list-none">
             <li className="py-2"><Link  to="/dashboard" className="text-gray-50 text-lg  hover:text-pink-700">Profile </Link>   </li>
+             <li className="py-2"><Link  to="/dashboard/requests" className="text-gray-50 text-lg  hover:text-pink-700">Requests </Link>   </li>
             </ul>
         </div>
     </div>

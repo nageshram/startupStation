@@ -142,7 +142,7 @@ const UpdateProfile = () => {
                   : profilePic && typeof profilePic === 'string'
                   ? `http://localhost:5000/api/upload/profile_pics/${profilePic}`
                   : 'default.jpg'
-              }
+              } onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/profile_pics/default.jpg'; }}
               alt="Profile"
               className="w-24 h-24 rounded-full object-cover border"
             />

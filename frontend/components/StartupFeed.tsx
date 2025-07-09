@@ -59,12 +59,12 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
     }
   };
 
-  const sendInvestRequest = async (startupId, bid) => {
+  const sendInvestRequest = async (startupId, desc) => {
     try {
       const res = await authFetch('http://localhost:5000/api/requests/invest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ startupId, bid }),
+        body: JSON.stringify({ startupId, desc }),
       });
       if (!res.ok) throw new Error();
       alert('Investment request sent!');
@@ -73,9 +73,9 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
     }
   };
 
-  const sendJobRequest = async (startupId, remarks, roleId) => {
+  const sendJobRequest = async (startupId, desc, targetRoleId) => {
     try {
-      const body = { startupId, remarks, roleId };
+      const body = { startupId, desc, targetRoleId };
       const res = await authFetch('http://localhost:5000/api/requests/job', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -229,7 +229,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
           />
           <button
             onClick={() =>
-              sendJobRequest(startup._id, remarks[startup._id], selectedRoles[startup._id])
+              sendJobRequest(startup._id, remarks[startup._id], selectedRoles[startup._id].toString())
             }
             className="px-3 py-1 bg-pink-600 text-white rounded hover:bg-pink-700"
             disabled={!selectedRoles[startup._id] || !remarks[startup._id]}
@@ -381,7 +381,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
                   </button>
                     
                     </div>
-                    <span className='text-sm text-gray-600'>@{user.username}</span>
+                    <span className='text-sm text-gray-600'>@{dev.username}</span>
                     <div className="text-xs text-gray-600">Techie</div>
                     <div className="text-xs text-gray-500">Skills: {dev.skills?.join(', ')}</div>
                     <div className="text-xs text-gray-400">{dev.desc}</div>
@@ -411,7 +411,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
                             receiverId: dev._id,
                             requestType: 'job',
                             startupId: user.startupId._id,
-                            targetRoleId: selectedRoles[dev._id] || null,
+                            targetRoleId: selectedRoles[dev._id].toString(),
                           })
                         }
                         className="px-3 py-1 md:text-[14px] bg-pink-600 text-white rounded hover:bg-pink-700"

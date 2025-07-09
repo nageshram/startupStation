@@ -7,8 +7,8 @@ import { createNotification } from './notificationController.js';
 import { sendNotification } from '../sockets/notificationSocket.js';
 
 export const getMyRequests = async (req, res) => {
-  const sent = await Request.find({ sender: req.user.id }).populate('receiver');
-  const received = await Request.find({ receiver: req.user.id }).populate('sender');
+  const sent = await Request.find({ sender: req.user.id }).populate('receiver').populate('startupId');
+  const received = await Request.find({ receiver: req.user.id }).populate('sender').populate('startupId');
   res.json({ sent, received });
 };
 
@@ -24,13 +24,13 @@ export const sendJobRequest = async (req, res) => {
   const founderId = startup.founderId;
   // Find the role name safely
   let roleName = '';
-  if (startup.teamId && Array.isArray(startup.teamId.roles)) {
+  if (startup.teamId) {
     const roleObj = startup.teamId.roles.find(
       role => role._id.toString() === targetRoleId
     );
     roleName = roleObj ? roleObj.roleName : '';
   }
-
+   //console.log(roleName);
   const request = await Request.create({
     sender: req.user.id,
     receiver: founderId,
@@ -38,6 +38,7 @@ export const sendJobRequest = async (req, res) => {
     category: 'job',
     startupId,
     targetRoleId,
+    rolename:roleName,
     desc
   });
   const notification = await createNotification({
@@ -80,8 +81,11 @@ export const sendInvestRequest = async (req, res) => {
 
 export const acceptRequest = async (req, res) => {
   const request = await Request.findById(req.params.id);
-  if (!request || request.status !== 'pending') return res.status(400).json({ msg: 'Invalid request' });
-
+  if (!request || request.status === 'accepted' || request.status === 'completed')
+  {
+    console.log(request.status);
+    return res.status(400).json({ msg: 'Invalid request' });
+  }
   request.status = 'accepted';
   await request.save();
 
@@ -94,7 +98,7 @@ export const acceptRequest = async (req, res) => {
     category: request.category,
     startupId: request.startupId,
     targetRoleId: request.targetRoleId,
-    desc: `You are invited to ${request.category === 'job' ? 'join the team' : 'invest in the startup'}`
+    desc: `You are invited to ${request.category === 'job' ? ' confirm and join the team' : 'confirm and invest in the startup'}`
   });
 
   const notification = await createNotification({
@@ -117,6 +121,22 @@ export const founderRequest = async (req, res) => {
 
   const proposalType = requestType === 'job' ? 'job-proposal' : 'invest-proposal';
 
+const startup = await Startup.findById(startupId).populate({
+    path: 'teamId',
+    populate: { path: 'roles' }
+  });
+  if (!startup) return res.status(404).json({ msg: 'Startup not found' });
+
+  const founderId = startup.founderId;
+  // Find the role name safely
+  let roleName = '';
+  if (startup.teamId) {
+    const roleObj = startup.teamId.roles.find(
+      role => role._id.toString() === targetRoleId
+    );
+    roleName = roleObj ? roleObj.roleName : '';   
+  }
+
   const proposal = await Request.create({
     sender: req.user.id,
     receiver: receiverId,
@@ -124,6 +144,7 @@ export const founderRequest = async (req, res) => {
     category: requestType,
     startupId: startupId,
     targetRoleId: targetRoleId,
+    rolename:roleName,
     desc: `You are invited to ${requestType === 'job' ? 'join the team' : 'invest in the startup'}`
   });
 
@@ -239,17 +260,66 @@ export const confirmInvestProposal = async (req, res) => {
   res.json({ msg: `${docType} confirmed`, document: doc });
 };
 
+
+export const createResignReq = async (req, res) => {
+  const { startupId, targetRoleId, desc } = req.body;     
+
+  const startup = await Startup.findById(startupId).populate({
+    path: 'teamId',
+    populate: { path: 'roles' }
+  });
+  if (!startup) return res.status(404).json({ msg: 'Startup not found' });
+
+  const founderId = startup.founderId;
+  // Find the role name safely
+  let roleName = '';
+  if (startup.teamId) {
+    const roleObj = startup.teamId.roles.find(
+      role => role._id.toString() === targetRoleId
+    );
+    roleName = roleObj ? roleObj.roleName : '';
+  }
+
+  const resign =  await Request.create({
+    sender: req.user.id,
+    receiver: startup.founderId,
+    type: 'resignation',
+    category: 'resign',
+    startupId:startupId,
+    targetRoleId:targetRoleId,
+    desc:desc
+  });
+
+
+  const notification = await createNotification({
+    user: startup.founderId,
+    type: 'request',
+    title: 'Resignation Request',
+    message: `${req.user.name} sent resign request for ${roleName}.`,
+    data: { requestId: request._id }
+  });
+  sendNotification(founderId, notification);
+  res.status(201).json(resign);
+
+};
+
 export const resignFromStartup = async (req, res) => {
-  const { startupId, roleId } = req.params;
+  const reqId  = req.params.reqid;
+  
+  const re = await Request.findOne({ reqId });
+  const startupId = re.startupId;
+  if (!re) return res.status(404).json({ msg: 'Request not found' });
+
   const team = await Team.findOne({ startupId });
   if (!team) return res.status(404).json({ msg: 'Team not found' });
 
-  const role = team.roles.find(r => r._id.toString() === roleId && r.assignedTo?.toString() === req.user._id.toString());
+
+  const role = team.roles.find(r => r._id.toString() === re.targetRoleId && r.assignedTo?.toString() === req.user.id.toString());
   if (!role) return res.status(403).json({ msg: 'Not authorized or already unassigned' });
 
   role.assignedTo = null;
   await team.save();
-  let profile = await DevProfile.findOne({ user: userId });
+  let profile = await DevProfile.findOne({ user: re.sender });
     await team.save();
     if (profile) 
       {
@@ -257,5 +327,33 @@ export const resignFromStartup = async (req, res) => {
           await profile.save();
       }
 
-  res.json({ msg: 'Resigned successfully and role unassigned' });
+      re.status = 'accepted';
+      await req.save();
+
+    const notification = await createNotification({
+    user: re.sender,
+    type: 'update',
+    title: 'Resignation update',
+    message: `Your resignation request was approved and executed successfully`
+  });
+  sendNotification(re.sender, notification);
+  res.status(200).json({ msg: 'Resigned successfully and role unassigned' });
 };
+
+export const deleteRequest = async (req,res) =>
+  {
+    if (!req.params.id) return res.status(400).json({ msg: 'Request ID is required' });
+
+    const sender = req.user.id;
+    const urequest = await Request.findOne({ _id: req.params.id });
+    if (!urequest) return res.status(404).json({ msg: 'Request not found' });
+    
+    if (sender !== urequest.sender.toString()) {
+      return res.status(403).json({ msg: 'You can only delete your own requests' });
+    }
+
+    const request = await Request.findByIdAndDelete(req.params.id);
+    if (!request) return res.status(404).json({ msg: 'Request not found' });
+  
+    res.status(200).json({ msg: 'Request deleted successfully' });
+  }

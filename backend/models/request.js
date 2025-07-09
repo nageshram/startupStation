@@ -5,9 +5,10 @@ const requestSchema = new mongoose.Schema({
   receiver: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   startupId: { type: mongoose.Schema.Types.ObjectId, ref: 'Startup', required: true },
   targetRoleId: { type: mongoose.Schema.Types.ObjectId },
-  type: { type: String, enum: ['job', 'job-proposal', 'invest', 'invest-proposal'], required: true },
-  category: { type: String, enum: ['job', 'invest'], required: true },
+  type: { type: String, enum: ['job', 'job-proposal', 'invest', 'invest-proposal','resignation'], required: true },
+  category: { type: String, enum: ['job', 'invest','resign'], required: true },
   desc: { type: String },
+  rolename:{ type:String },
   status: { type: String, enum: ['pending', 'accepted', 'rejected', 'completed'], default: 'pending' }
 }, { timestamps: true });
 

@@ -3,12 +3,12 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Bell, LogOut, Search } from 'lucide-react';
 import { authFetch } from '../utils/authFetch';
 
-const Navbar = ({ user, notifications = [], setErrors }) => {
+const Navbar = ({ user, notification = [], setErrors }) => {
  // const [search, setSearch] = useState('');
+  const [notifications, setNotifications] = useState(notification || []);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
-  const [navbarPlace, setNavbarPlace] = useState('home');
   const location = useLocation();
   const currentPath = location.pathname;
 
@@ -76,7 +76,7 @@ const Navbar = ({ user, notifications = [], setErrors }) => {
   }, [dropdownOpen]);
 
   return (
-    <header className="flex justify-between items-center px-4 py-2 bg-white shadow-md z-20 relative">
+    <header className="flex justify-between items-center px-4 py-2 bg-white shadow-md z-20 relative top-0 left-0 right-0">
       <div
         className="text-pink-700 font-extrabold text-xl cursor-pointer"
         onClick={() => navigate('/')}
