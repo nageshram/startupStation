@@ -3,9 +3,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Bell, LogOut, Search } from 'lucide-react';
 import { authFetch } from '../utils/authFetch';
 
-const Navbar = ({ user, notification = [], setErrors }) => {
+const Navbar = ({ user, notifications = [], setErrors, setNotifications }) => {
  // const [search, setSearch] = useState('');
-  const [notifications, setNotifications] = useState(notification || []);
+  //const [notifications, setNotifications] = useState(notification || []);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
@@ -44,8 +44,7 @@ const Navbar = ({ user, notification = [], setErrors }) => {
         method: 'PUT',
         credentials: 'include',
       });
-      // Optionally, update local state to mark all as seen or clear the badge
-      // For example, you can set all notifications' seen property to true if you store it
+      setNotifications((prev) => prev.map((n) => ({ ...n, seen: true })));
     } catch (err) {
       setErrors && setErrors('Failed to mark notifications as seen');
     }
@@ -57,7 +56,7 @@ const Navbar = ({ user, notification = [], setErrors }) => {
         method: 'DELETE'});
       if (res.ok) {
         console.log("Notifications cleared successfully");
-        setNotifications([]);
+        //setNotifications([]);
       }
 
     }

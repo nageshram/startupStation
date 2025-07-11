@@ -44,7 +44,7 @@ const Dashboard = ()=>{
             <>
             
             <section className="min-h-screen my-1 rounded bg-gray-100">
-            <Navbar1 user={user} setErrors={setErrors} notifications={notifications} />
+            <Navbar1 user={user} setErrors={setErrors} notifications={notifications} setNotifications={setNotifications} />
 
             <div className=" flex flex-row gap-2 mx-2">
             <Sidebar  user={user} />

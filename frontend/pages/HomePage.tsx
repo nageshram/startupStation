@@ -44,7 +44,7 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen mx-4 bg-gray-100 font-sans">
-      <Navbar notifications={notifications} user={user} setErrors={setErrors} />
+      <Navbar notifications={notifications} user={user} setErrors={setErrors} setNotifications={setNotifications} />
 
       {errors && (
         <div className="text-red-500 text-center mt-2 text-sm font-semibold">

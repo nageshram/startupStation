@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { authFetch } from '../utils/authFetch';
 import { MessageCircle, MessageSquare } from 'lucide-react'
+import { toast } from 'react-toastify';
 
-const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
+const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
   const [feed, setFeed] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState(null); // null means no search, object means search active
@@ -46,18 +47,31 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
   // Founder proposal function
   const founderRequest = async ({ receiverId, requestType, startupId, targetRoleId }) => {
     try {
-      const body = { receiverId, requestType, startupId, targetRoleId };
+      const body = { receiverId, requestType, startupId,targetRoleId};
+      console.log(body);
       const res = await authFetch('http://localhost:5000/api/requests/founder-req', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
-      if (!res.ok) throw new Error();
-      alert('Proposal sent successfully');
-    } catch {
-      setErrors('Failed to send proposal');
+      const fullResponse = await res.json();
+      if (!res.ok) { toast.info(fullResponse.msg); return;}
+
+      setRemarks({ ...remarks, [startupId]: '' }); // Clear remarks after sending
+;      toast.success('Proposal sent successfully');
+    } catch(err) {
+      toast.error(err.message);
     }
   };
+
+  const rejectRequest = async ( id ) =>
+  {
+    const res = await authFetch(`http://localhost:5000/api/requests/reject/${id}`, { method: 'PUT'});
+    if(!res.ok){ alert(res.msg); return;}
+    else{
+      alert("Request rejected");
+    }
+  }
 
   const sendInvestRequest = async (startupId, desc) => {
     try {
@@ -66,10 +80,12 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ startupId, desc }),
       });
-      if (!res.ok) throw new Error();
-      alert('Investment request sent!');
+      const fullResponse = await res.json();
+      if (!res.ok) { toast.info(fullResponse.msg || 'Failed to send investment request'); return;}
+      setRemarks({ ...remarks, [startupId]: '' }); // Clear remarks after sending
+      toast.success('Investment request sent!');
     } catch {
-      setErrors('Failed to send investment proposal');
+      toast.error('Failed to send investment proposal');
     }
   };
 
@@ -81,10 +97,12 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
-      if (!res.ok) throw new Error();
-      alert('Job request sent!');
+      const fullResponse = await res.json();
+      if ( res.status == 400 ) { toast.error(fullResponse.msg); console.log(fullResponse.msg); return;}
+      setRemarks({ ...remarks, [startupId]: '' }); // Clear remarks after sending
+      toast.success('Job request sent!');
     } catch {
-      setErrors('Failed to send job request');
+      toast.error('Failed to send job request');
     }
   };
 
@@ -215,9 +233,14 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
           >
             <option value="" className='text-gray-300'>Select Role</option>
             {startup.teamId?.roles?.map((role) => (
+              
+              <> { (role.assigned === null && role.assignedTo !== undefined ) && (
               <option key={role._id} value={role._id}>
                 {role.roleName}
               </option>
+              )}
+              </>
+
             ))}
           </select>
           <input
@@ -400,9 +423,12 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
                       >
                         <option value="">Select Role</option>
                         {user.startupId.teamId.roles.map((role) => (
-                          <option key={role._id} value={role._id}>
-                            {role.roleName}
-                          </option>
+                           <> { (role.assignedTo === null && role.assignedTo !== undefined ) && (
+                                 <option key={role._id} value={role._id}>
+                                      {role.roleName}
+                                </option>
+                                )}
+                            </>
                         ))}
                       </select>
                       <button
@@ -493,10 +519,13 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
                   }
                 >
                   <option value="" className='text-gray-300'>Select Role</option>
-                  {startup.teamId?.roles?.map((role) => (
-                    <option key={role._id} value={role._id}>
-                      {role.roleName}
-                    </option>
+                  {startup.teamId?.roles?.map((role, idx) => (
+                     <> { (role.assignedTo === null && role.assignedTo !== undefined ) && (
+                              <option key={role._id} value={role._id}>
+                                    {role.roleName}
+                              </option>
+                        )}
+                    </>
                   ))}
                 </select>
 )}

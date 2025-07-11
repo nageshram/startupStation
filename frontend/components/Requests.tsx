@@ -66,6 +66,11 @@ const Requests = () => {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
     });
+    if (response.status === 400) {  
+      const data = await response.json();
+      alert(data.msg || 'Failed to confirm job proposal');
+      return;
+    }
     const data = await response.json();
     if (data) {
       setReceived(prev => prev.map(request => request._id === reqId ? { ...request, status: 'completed' } : request));
@@ -95,19 +100,19 @@ const Requests = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
         {/* My Requests */}
-        <div className="bg-white rounded-lg shadow p-4">
+        <div className="bg-white rounded-lg shadow p-4 overflow-auto">
           <h2 className="text-xl text-gray-600 mb-2">My Requests</h2>
           {sent.length > 0 ? sent.map(request => (
             <div key={request._id} className="border border-gray-200 rounded p-3 mb-2 shadow-sm bg-gray-50">
               <p><span className='text-gray-800 p-1'>Sent to </span> @{request.receiver.username}</p>
               <p><span className='p-1 text-gray-800'>Startup </span> {request.startupId.name}</p>
-              { (request.type === 'job' || request.type === 'job-proposal') && <p className='text-gray-600 p-1'><S></S>ent for the role {request.rolename}</p> }
+              { (request.type === 'job' || request.type === 'job-proposal') && <p className='text-gray-600 p-1'>sent for the role {request.rolename}</p> }
               { (request.type === 'invest' || request.type === 'invest-proposal') && <p className='text-gray-600 p-1'>Remarks {request.desc}</p> }
                { (request.type === 'job' || request.type === 'job-proposal') && <p className='text-gray-600'>{request.desc}</p> }
               { request.status === 'pending' && <p className="bg-yellow-300 p-1 w-20 rounded-sm text-center text-gray-800 my-1">Pending</p> }
               { request.status === 'accepted' && <p className="bg-green-500 p-1 w-20 rounded-sm text-center text-gray-800 my-1">Accepted</p> }
-              { request.status === 'completed' && <p className="bg-blue-500 p-1 w-20 rounded-sm text-center text-gray-800 my-1">Completed</p> }
-              { request.status === 'rejected' && <p className="bg-red-500 p-1 w-20 rounded-sm text-center text-gray-800 my-1">Rejected</p> }
+              { request.status === 'completed' && <p className="bg-blue-500 p-1 w-25 rounded-sm text-center text-gray-50 my-1">Completed</p> }
+              { request.status === 'rejected' && <p className="bg-red-500 p-1 w-25 rounded-sm text-center text-gray-50 my-1">Rejected</p> }
               <button
                 className="cursor-pointer text-gray-500  p-1 hover:bg-red-600   mt-2"
                 onClick={() => deleteReq(request._id)}
@@ -117,7 +122,7 @@ const Requests = () => {
         </div>
 
         {/* Requests from Others */}
-        <div className="bg-white rounded-lg shadow p-4">
+        <div className="bg-white rounded-lg shadow p-4 overflow-auto">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-xl  text-gray-600">Requests from Others</h2>
             <select
@@ -138,8 +143,8 @@ const Requests = () => {
               <p><span>Startup:</span> {request.startupId.name}</p>
                { (request.type === 'job' || request.type === 'job-proposal') && <p className='text-gray-600'>sent for {request.rolename}</p> }
                { request.status === 'pending' && <p className="bg-yellow-300 p-1 w-20 rounded-sm text-center text-gray-800 my-1">Pending</p> }
-              { request.status === 'accepted' && <p className="bg-green-500 p-1 w-20 rounded-sm text-center text-gray-800 my-1">Accepted</p> }
-              { request.status === 'completed' && <p className="bg-blue-500 p-1 w-20 rounded-sm text-center text-gray-800 my-1">Completed</p> }
+              { request.status === 'accepted' && <p className="bg-green-500 p-1 w-20 rounded-sm text-center text-gray-50 my-1">Accepted</p> }
+              { request.status === 'completed' && <p className="bg-blue-500 p-1 w-25 rounded-sm text-center text-gray-50 my-1">Completed</p> }
               { request.status === 'rejected' && <p className="bg-red-500 p-1 w-20 rounded-sm text-center text-gray-800 my-1">Rejected</p> }
               <p className="text-gray-600 p-2">{request.desc}</p>
 

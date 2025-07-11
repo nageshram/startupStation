@@ -64,7 +64,7 @@ export const suggestForDev = async (req, res) => {
 };
 
 export const suggestForInvestor = async (req, res) => {
-  // Example: startups where all roles are hired (customize as needed)
+  // Example: startups where all roles are hired 
   const startups = await Startup.find({
     $expr: { $eq: [ { $size: "$openedRoles" }, 0 ] }
   }).populate('founderId', 'username name photo');

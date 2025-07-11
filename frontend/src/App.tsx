@@ -12,11 +12,15 @@ import ProtectedRoute from '../components/ProtectedRoute.tsx';
 import UpdateProfile from '../pages/UpdateProfile.tsx';
 import Dashboard from '../pages/Dashboard.tsx'
 import Requests from '../components/Requests.tsx';
+import { ToastContainer , toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   
   return (
-    
+       <>
+                    <ToastContainer
+                        position="top-right" />
                   <Routes>
                      <Route path="/" element={<HomeLayout />}>
                                       <Route path="" element={<LandingPage />} />
@@ -50,7 +54,7 @@ function App() {
           </Route>
           
           </Routes>
-
+            </>
     
   )
 }
