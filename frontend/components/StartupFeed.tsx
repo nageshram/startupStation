@@ -198,6 +198,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
         <img
           src={startup.photo ? `http://localhost:5000/api/upload/startup_pics/${startup.photo}` : '/default.jpg'}
           className="w-20 h-20 rounded object-cover"
+          onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/startup_pics/default.jpg'; }}
           alt="startup"
         />
         <div className="flex-1">
@@ -234,7 +235,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
             <option value="" className='text-gray-300'>Select Role</option>
             {startup.teamId?.roles?.map((role) => (
               
-              <> { (role.assigned === null && role.assignedTo !== undefined ) && (
+              <> { (role.assignedTo === null && role.assignedTo !== undefined ) && (
               <option key={role._id} value={role._id}>
                 {role.roleName}
               </option>
@@ -252,7 +253,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
           />
           <button
             onClick={() =>
-              sendJobRequest(startup._id, remarks[startup._id], selectedRoles[startup._id].toString())
+              sendJobRequest(startup._id, remarks[startup._id], selectedRoles[startup._id])
             }
             className="px-3 py-1 bg-pink-600 text-white rounded hover:bg-pink-700"
             disabled={!selectedRoles[startup._id] || !remarks[startup._id]}
@@ -437,7 +438,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
                             receiverId: dev._id,
                             requestType: 'job',
                             startupId: user.startupId._id,
-                            targetRoleId: selectedRoles[dev._id].toString(),
+                            targetRoleId: selectedRoles[dev._id],
                           })
                         }
                         className="px-3 py-1 md:text-[14px] bg-pink-600 text-white rounded hover:bg-pink-700"

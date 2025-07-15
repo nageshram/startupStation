@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Bell, LogOut, Search } from 'lucide-react';
 import { authFetch } from '../utils/authFetch';
 
-const Navbar = ({ user, notifications = [], setErrors, setNotifications }) => {
+const Navbar = ({ user, notifications = [], setErrors, setNotifications, toggleSidebar }) => {
  // const [search, setSearch] = useState('');
   //const [notifications, setNotifications] = useState(notification || []);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -25,19 +25,12 @@ const Navbar = ({ user, notifications = [], setErrors, setNotifications }) => {
   const handleLogout = async () => {
     try {
       await fetch('http://localhost:5000/api/auth/logout', { method: 'POST', credentials: 'include' });
+      document.location.reload();
       navigate('/login');
     } catch (err) {
       setErrors('Logout failed');
     }
   };
-/*
-  const handleSearch = (e) => {
-    if (e.key === 'Enter' && search.trim()) {
-      navigate(`/search?q=${search}`);
-    }
-  };
-  */
-
   const markAllAsSeen = async () => {
     try {
       await fetch('http://localhost:5000/api/notifications/seen', {
@@ -68,32 +61,43 @@ const Navbar = ({ user, notifications = [], setErrors, setNotifications }) => {
 
   useEffect(() => {
     if (dropdownOpen && notifications.length > 0) {
-      markAllAsSeen();
-      clearNotifications();
+  
+     setTimeout(()=>{ markAllAsSeen(); },8000); 
     }
     // eslint-disable-next-line
   }, [dropdownOpen]);
 
   return (
     <header className="flex justify-between items-center px-4 py-2 bg-white shadow-md z-20 relative top-0 left-0 right-0">
+     
+     
+       <button
+        onClick={toggleSidebar}
+        className="sm:hidden text-gray-700 focus:outline-none"
+        aria-label="Toggle sidebar"
+      >
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M4 6h16M4 12h16M4 18h16"
+          />
+        </svg>
+      </button>
+     
       <div
-        className="text-pink-700 font-extrabold text-xl cursor-pointer"
+        className="text-pink-700 md:font-extrabold font-bold  md:text-xl cursor-pointer"
         onClick={() => navigate('/')}
       >
         Startup Stn.
       </div>
-      { /*
-      <div className="flex-1 mx-4 max-w-md relative">
-        <Search className="absolute left-3 top-3 text-gray-500" size={18} />
-        <input
-          type="text"
-          placeholder="Search devs, investors, startups..."
-          className="w-full pl-9 pr-4 py-2 border rounded-md focus:outline-pink-500"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={handleSearch}
-        />
-      </div> */ }
+      
 
       <div className="flex items-center gap-4">
         <div className="relative" ref={dropdownRef}>
@@ -117,7 +121,7 @@ const Navbar = ({ user, notifications = [], setErrors, setNotifications }) => {
                   notifications.filter(n => !n.seen).map((note, i) => (
                     <div
                       key={note._id}
-                      className="text-sm text-gray-600 border-b py-1 last:border-none"
+                      className="text-sm text-gray-600 border-b py-1 last:border-none overflow-ellipsis"
                     >
                       {note.message}
                     </div>

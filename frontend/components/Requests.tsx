@@ -61,6 +61,20 @@ const Requests = () => {
     }
   };
 
+ const acceptResignReq= async (reqId) => {
+    const response = await authFetch(`http://localhost:5000/api/requests/accept/resign/${reqId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!response.ok) return;
+    const data = await response.json();
+    if (data) {
+      setReceived(prev => prev.map(request => request._id === reqId ? { ...request, status: 'accepted' } : request));
+      alert('Request accepted successfully');
+    }
+  };
+
+
   const confirmJobProposal = async (reqId) => {
     const response = await authFetch(`http://localhost:5000/api/requests/${reqId}/confirm/job-proposal`, {
       method: 'PUT',
@@ -95,17 +109,26 @@ const Requests = () => {
   if (loading) return <div className="text-center p-8 text-gray-500">Loading requests...</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="p-6 w-full mx-auto bg-white shadow rounded text-gray-600 overflow-y-auto">
       <h1 className="text-2xl font-semibold text-pink-700 mb-4">Manage Requests</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
         {/* My Requests */}
-        <div className="bg-white rounded-lg shadow p-4 overflow-auto">
+        <div className="bg-white rounded-lg shadow p-4 overflow-y-auto">
           <h2 className="text-xl text-gray-600 mb-2">My Requests</h2>
           {sent.length > 0 ? sent.map(request => (
             <div key={request._id} className="border border-gray-200 rounded p-3 mb-2 shadow-sm bg-gray-50">
               <p><span className='text-gray-800 p-1'>Sent to </span> @{request.receiver.username}</p>
               <p><span className='p-1 text-gray-800'>Startup </span> {request.startupId.name}</p>
+
+
+              { request.type === 'resignation' && (
+                <>
+                <p><span className='p-1 text-gray-800'>Startup </span> {request.desc}</p>
+                <p><span className='p-1 text-gray-800'>Startup </span> {request.type}</p>
+                </>
+              )}
+
               { (request.type === 'job' || request.type === 'job-proposal') && <p className='text-gray-600 p-1'>sent for the role {request.rolename}</p> }
               { (request.type === 'invest' || request.type === 'invest-proposal') && <p className='text-gray-600 p-1'>Remarks {request.desc}</p> }
                { (request.type === 'job' || request.type === 'job-proposal') && <p className='text-gray-600'>{request.desc}</p> }
@@ -113,16 +136,20 @@ const Requests = () => {
               { request.status === 'accepted' && <p className="bg-green-500 p-1 w-20 rounded-sm text-center text-gray-800 my-1">Accepted</p> }
               { request.status === 'completed' && <p className="bg-blue-500 p-1 w-25 rounded-sm text-center text-gray-50 my-1">Completed</p> }
               { request.status === 'rejected' && <p className="bg-red-500 p-1 w-25 rounded-sm text-center text-gray-50 my-1">Rejected</p> }
-              <button
-                className="cursor-pointer text-gray-500  p-1 hover:bg-red-600   mt-2"
+              
+              { request.status !== 'completed' && request.status !== 'accepted' &&  (
+                  <button
+                className="cursor-pointer text-gray-500   p-1 hover:bg-red-600   mt-2"
                 onClick={() => deleteReq(request._id)}
               >Delete</button>
+              )}
+              
             </div>
           )) : <p className="text-gray-500">No requests sent yet.</p>}
         </div>
 
         {/* Requests from Others */}
-        <div className="bg-white rounded-lg shadow p-4 overflow-auto">
+        <div className="bg-white rounded-lg shadow p-4 overflow-y-auto">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-xl  text-gray-600">Requests from Others</h2>
             <select
@@ -148,6 +175,13 @@ const Requests = () => {
               { request.status === 'rejected' && <p className="bg-red-500 p-1 w-20 rounded-sm text-center text-gray-800 my-1">Rejected</p> }
               <p className="text-gray-600 p-2">{request.desc}</p>
 
+              { request.type === 'resignation' && (
+                <>
+              
+                <p><span className='p-1 text-gray-800'></span> {request.type}</p>
+                </>
+              )}
+
               {user?.designation === 'Founder' && request.status === 'pending' && (
                 <>
                   {request.type === 'job' && (
@@ -160,6 +194,17 @@ const Requests = () => {
                       Accept Investment Request
                     </button>
                   )}
+
+                  {request.type === 'resignation'  && (
+                       <>
+                    <p className='text-gray-600 p-1'>sent for {request.rolename}</p>
+
+                    <button onClick={() => acceptResignReq(request._id)} className="bg-green-500 text-white px-4 py-1 rounded mt-2">
+                      Accept Resign Request
+                    </button> 
+                    </>
+    
+              )}
                 </>
               )}
 
@@ -168,12 +213,29 @@ const Requests = () => {
                   Confirm Investment Proposal
                 </button>
               )}
-
-              {user?.designation === 'Dev' && (request.status === 'accepted' || request.status === 'pending') && request.type === 'job-proposal' && (
+             { user?.designation !== 'Founder' && user?.dev?.status === null  ? (
+                <>
+                  {user?.designation === 'Dev'  && (request.status === 'accepted' || request.status === 'pending') && request.type === 'job-proposal' && (
                 <button onClick={() => confirmJobProposal(request._id)} className="bg-blue-500 text-white px-4 py-1 rounded mt-2">
                   Confirm Job Proposal
                 </button>
               )}
+
+
+
+                </>
+             ): (
+              <>
+                { user?.designation === 'Dev' && request.status !== 'completed' && (
+                  <>
+                  <p className="text-gray-700 p-1"> Dear user you can't join other startups before resigning to the current startup. </p>
+                </>
+                )}
+                </>
+
+             )  }
+              
+
             </div>
           )) : <p className="text-gray-500">No requests received yet.</p>}
         </div>

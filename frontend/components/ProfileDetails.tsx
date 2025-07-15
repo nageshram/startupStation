@@ -6,7 +6,7 @@ const ProfileDetails = ({ user, setErrors, setActiveChatUser }) => {
   const [suggestions, setSuggestions] = useState([]);
 
   useEffect(() => {
-    if (!user) return;
+    if ( user.designation === 'Admin' || !user) return;
     authFetch(`http://localhost:5000/api/suggestions/${user.designation}`)
       .then((res) => res.json())
       .then(setSuggestions)
@@ -42,8 +42,11 @@ const ProfileDetails = ({ user, setErrors, setActiveChatUser }) => {
         )}
       </div>
 
+
+{ user.designation !== 'Admin' && (
       <div className="mt-4 border-t border-gray-300  pt-2">
         <h3 className="text-pink-700 font-semibold mb-2">Suggestions</h3>
+        
         <div className="space-y-2">
           {/* Founder: show devs and investors */}
           {user.designation === 'Founder' && (suggestions.devs?.length > 0 || suggestions.investors?.length > 0) ? (
@@ -119,7 +122,9 @@ const ProfileDetails = ({ user, setErrors, setActiveChatUser }) => {
             <p className="text-gray-400 italic text-sm">No suggestions available</p>
           )}
         </div>
+         
       </div>
+        )}
     </div>
   );
 };

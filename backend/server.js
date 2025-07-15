@@ -22,6 +22,7 @@ import path from 'path';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import cookieParser  from 'cookie-parser'
+import analyticsRoutes from './routes/analyticsRoutes.js'
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -63,6 +64,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/search', searchRoute);
 app.use('/api/contactadmin', contactAdminRoute );
 app.use('/api/suggestions', suggestionRoutes);
+app.use('/api/analytics', analyticsRoutes);
 app.use('/uploads/profile_pics', express.static(path.join(__dirname, 'backend/uploads/profile_pics')));
 app.use('/uploads/startup_pics', express.static(path.join(__dirname, 'backend/uploads/startup_pics')));
 

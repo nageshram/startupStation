@@ -17,7 +17,6 @@ const UpdateProfile = () => {
         const res = await authFetch('http://localhost:5000/api/users', { method: 'GET' });
         const userData = await res.json();
         setForm(userData);
-
         if (userData.photo) {
           const imgUrl = `http://localhost:5000/api/upload/profile_pics/${userData.photo}`;
           try {
@@ -125,7 +124,7 @@ const UpdateProfile = () => {
   if (!form.username) return <div className="p-8 text-center">Loading...</div>;
 
   return (
-    <div className="w-full bg-white rounded-lg shadow-md p-6 mt-4 md:mt-6 mx-auto max-w-6xl">
+    <div className="w-full h-screen bg-white rounded-lg shadow-md p-6 mt-4 md:mt-6 mx-auto max-w-6xl">
       {error && (
         <div className="mb-4 text-red-600 bg-red-100 border border-red-300 rounded p-2 text-center">
           {error}
@@ -178,7 +177,7 @@ const UpdateProfile = () => {
           )}
         </div>
 
-        <form className="flex-1 w-full **:border-gray-300 " onSubmit={handleSave}>
+        <form className="flex-1 w-full h-screen **:border-gray-300 " onSubmit={handleSave}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
             <span className='font-semibold text-pink-700 my-5'>Profile Details</span>
@@ -253,7 +252,7 @@ const UpdateProfile = () => {
             </div>
 
             {form.designation === 'Dev' && (
-              <div className="space-y-3">
+              <div className="space-y-3 bg-white max-sm:p-5 w-full max-sm:w-full max-sm:my-2">
                 <h3 className="font-semibold text-pink-700">Developer Profile</h3>
                 <label>
                   Skills (comma separated)

@@ -12,7 +12,7 @@ router.post('/invest', auth,  sendInvestRequest);// leave this route
 router.put('/:id/accept', auth,  acceptRequest);
 router.put('/:id/confirm/job-proposal', auth,  confirmJobProposal);
 router.put('/:id/confirm/invest-proposal', auth,  confirmInvestProposal);
-router.put('/accept/resign/:id', auth,  resignFromStartup);// for founder to accept resign req
+router.post('/accept/resign/:id', auth,  resignFromStartup);// for founder to accept resign req
 router.post('/founder-req', auth, founderRequest)// leave this one as wellrouter
 router.post('/resign', auth, createResignReq);// needed founderId, startupId, targetRoleId
 router.delete('/:id', auth, deleteRequest);// needed reqId

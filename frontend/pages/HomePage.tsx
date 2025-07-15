@@ -43,7 +43,7 @@ const HomePage = () => {
   }, [user?._id]);
 
   return (
-    <div className="min-h-screen mx-4 bg-gray-100 font-sans">
+    <div className="min-h-screen md:mx-4 bg-gray-100 font-sans">
       <Navbar notifications={notifications} user={user} setErrors={setErrors} setNotifications={setNotifications} />
 
       {errors && (

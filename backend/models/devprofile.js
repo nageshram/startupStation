@@ -7,7 +7,10 @@ const devProfileSchema = new mongoose.Schema({
   experience: String,
   portfolioLink: String,
   desc:String,
-  status:String
+  teamId:{
+    type: mongoose.Schema.Types.ObjectId, ref:'Team', default:null
+  },
+  status :String
 });
 
 devProfileSchema.index({ skills: 'text' });

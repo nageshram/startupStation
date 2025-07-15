@@ -10,7 +10,7 @@ router.post('/check-email' , checkEmail);
 
 router.post('/add', addUser);
 
-router.get('/getall', getAllUsers); 
+router.get('/all',auth, getAllUsers); 
 
 router.get('/', auth, getSingleUser);
 
@@ -18,7 +18,7 @@ router.put('/', auth, updateUser);
 
 router.patch('/', auth, updateUserPatch);
 
-router.delete('/',auth,  deleteUser);
+router.delete('/:id',auth,  deleteUser);
 
 router.post("/dev/profile", auth,  createOrUpdateDevProfile);
 

@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Framer } from "lucide-react"
 import { useState } from "react";
+import { toast } from 'react-toastify'
 
 export const LoginPage = ()=>
 {
@@ -14,7 +15,7 @@ export const LoginPage = ()=>
     }
 
     const handleSubmit = async (e)=>
-    {
+    {    try{
          e.preventDefault();
          const res = await fetch("http://localhost:5000/api/auth/login",{
             method:"POST",
@@ -29,21 +30,28 @@ export const LoginPage = ()=>
          }
          else if(!res.ok)
          {
-            setError("Something went wrong please try again later!..");
+            toast.error("Something went wrong please try again later!..");
          }
         else{
              if (res.status == 200 || res.ok)
             {
+                 toast.success("Login Successfull!");
                  navigate('/home');
                  console.log("Login Successfull");
             }
         }
+        }
+        catch(err)
+        {
+            toast.error("Something went wrong try again later");
+        }
+
         
     }
 
     return(
 
-        <section  className="login  w-screen  md:m-1 rounded-xl h-screen font-sans  " >
+        <section  className="login  w-screen  md:m-1 md:rounded-xl h-screen font-sans  " >
            
                      
             <div className="flex py-25 md:p-12 justify-center flex-col items-center "  >

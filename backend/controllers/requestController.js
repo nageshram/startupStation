@@ -63,7 +63,7 @@ export const sendJobRequest = async (req, res) => {
     roleName = roleObj ? roleObj.roleName : '';
   }
    //console.log(roleName);
-  console.log( " found one req :",existingReq)
+  //console.log( " found one req :",existingReq)
 
   const request = await Request.create({
     sender: req.user.id,
@@ -124,7 +124,7 @@ export const acceptRequest = async (req, res) => {
   const request = await Request.findById(req.params.id);
   if (!request || request.status === 'accepted' || request.status === 'completed')
   {
-    console.log(request.status);
+    //console.log(request.status);
     return res.status(400).json({ msg: 'Invalid request' });
   }
   request.status = 'accepted';
@@ -179,7 +179,7 @@ const startup = await Startup.findById(startupId).populate({
     roleName = roleObj ? roleObj.roleName : '';   
   }
    
-  const existingReq = await Request.findOne({ startupId, sender:req.user.id, type:proposalType, receiver:receiverId});
+  const existingReq = await Request.findOne({ startupId, sender:req.user.id, type:proposalType, receiver:receiverId, targetRoleId:targetRoleId});
   if(existingReq)
   {   
     //console.log(existingReq);
@@ -237,7 +237,8 @@ export const confirmJobProposal = async (req, res) => {
     await team.save();
     if (profile) 
       {
-          profile.status = startup.teamId.toString();
+          profile.teamId = startup.teamId;
+          profile.status= "Hired";
           await profile.save();
       }
     
@@ -245,7 +246,6 @@ export const confirmJobProposal = async (req, res) => {
     const notification = await createNotification({
     user: startup.founderId,
     type: 'update',
-
     title: 'job proposal accepted',
     message: `${req.user.name} has accepted your job proposal for ${role}. now he is part of your startup`,
     data: { requestId: request._id }
@@ -262,7 +262,8 @@ export const confirmJobProposal = async (req, res) => {
     type: docType,
     userId: req.user._id,
     startupId: request.startupId,
-    content: `${docType} agreement content...`
+    content: `${docType} Confidentiality Agreement between Founder and Developer:
+This Non-Disclosure Agreement ("Agreement") is entered into between the Founder and the Developer in the context of engagement for the startup project. The Developer acknowledges that during the course of collaboration, they may have access to confidential information, including but not limited to product roadmaps, codebases, algorithms, designs, business strategies, and client data. The Developer agrees not to disclose, reproduce, or use this information for any purpose outside the scope of the assigned work. All intellectual property developed during the engagement shall remain the sole property of the startup unless otherwise stated in a separate written agreement. This obligation of confidentiality remains in effect both during and after the term of collaboration.`
   });
 
   await Startup.findByIdAndUpdate(request.startupId, {
@@ -310,7 +311,8 @@ export const confirmInvestProposal = async (req, res) => {
     type: docType,
     userId: req.user._id,
     startupId: request.startupId,
-    content: `${docType} agreement content...`
+    content: `${docType} : Confidentiality Agreement between Founder and Investor:
+This Agreement is made between the Founder and the Investor to ensure the protection of sensitive business information disclosed during investment evaluation and collaboration. The Investor agrees not to share or use proprietary information—including but not limited to financial records, valuation metrics, business models, intellectual property, and client data—for any purpose other than evaluating the potential investment or assisting in business growth. Both parties agree that the disclosure of any confidential information must be limited to authorized personnel only and must be used solely in the context of this business relationship. This Agreement is binding and survives the termination of the investment discussions or formal engagement`
   });
 
   await Startup.findByIdAndUpdate(request.startupId, {
@@ -322,13 +324,12 @@ export const confirmInvestProposal = async (req, res) => {
 
 
 export const createResignReq = async (req, res) => {
-  const { startupId, targetRoleId, desc } = req.body;     
-
-  const existingReq = await Request.findOne({ startupId, sender:req.user.id, type:'resignation'});
+  const { startupId, desc } = req.body;     
+  /*const existingReq = await Request.findOne({ startupId, sender:req.user.id, type:'resignation' });
   if(existingReq)       
   {
     return res.status(400).json({ msg: 'You have already sent a resignation request for this startup' });
-  }
+  }*/
   
   const startup = await Startup.findById(startupId).populate({
     path: 'teamId',
@@ -338,22 +339,23 @@ export const createResignReq = async (req, res) => {
   if (!startup) return res.status(404).json({ msg: 'Startup not found' });
 
   const founderId = startup.founderId;
-  
+
   let roleName = '';
+  let roleId = '';
   if (startup.teamId) {
     const roleObj = startup.teamId.roles.find(
-      role => role._id.toString() === targetRoleId
+      role => role.assignedTo.toString() === req.user.id.toString()
     );
     roleName = roleObj ? roleObj.roleName : '';
-  }
+  
 
   const resign =  await Request.create({
     sender: req.user.id,
     receiver: startup.founderId,
     type: 'resignation',
     category: 'resign',
-    startupId:startupId,
-    targetRoleId:targetRoleId,
+    startupId:startup._id,
+    targetRoleId:roleObj._id,
     desc:desc
   });
 
@@ -363,41 +365,55 @@ const notification = await createNotification({
     type: 'request',
     title: 'Resignation Request',
     message: `${req.user.name} sent resign request for ${roleName}.`,
-    data: { requestId: request._id }
+    data: { requestId: resign._id }
   });
   sendNotification(founderId, notification);
   res.status(201).json(resign);
+}
+return res.status(400).json({msg:"Team not found"})
 
 };
 
 export const resignFromStartup = async (req, res) => {
-  const reqId  = req.params.reqid;
-  
-  const re = await Request.findOne({ reqId });
-  const startupId = re.startupId;
+
+  const reqId  = req.params.id;
+  const re = await Request.findById(reqId);
+  //console.log(re)
   
   if (!re) return res.status(404).json({ msg: 'Request not found' });
+  const startupId = re.startupId;
+  
 
-  const startup = await Startup.findOne({ startupId });
+  const startup = await Startup.findById(startupId).populate( {path :'teamId', populate:{ path:'roles', select:'_id roleName assignedTo'}});
+  //console.log(startup);
   if (!startup) return res.status(404).json({ msg: 'startup not found' });
+  
+const role = startup.teamId.roles.find(role => role._id.toString() === re.targetRoleId.toString());
+    if (!role) return res.status(404).json({ msg: 'Role not found' });
+    if (!role.assignedTo) return res.status(400).json({ msg: 'Role already unassigned' });
 
-  const role = startup.teamId.roles.find(r => r._id.toString() === re.targetRoleId.toString() && r.assignedTo?.toString() === req.user.id.toString());
-  if (!role) return res.status(403).json({ msg: 'Not authorized or already unassigned' });
-   startup.teamId.roles = startup.teamId.roles.map(r =>  
-  r._id.toString() === re.targetRoleId.toString() ? { ...r, assignedTo: null } : r
-  );  
+    const roleID = role._id;
+   const team = await Team.findById(startup.teamId._id);
+
+    const assignRole = team.roles.id(roleID);
+
+    if (!assignRole) return res.status(404).json({ msg: 'Role not found in team' });
+    assignRole.assignedTo = null;
 
   
   let profile = await DevProfile.findOne({ user: re.sender });
-    await startup.save();
+    //await startup.save();
     if (profile) 
       {
           profile.status = null;
+          profile.teamId=null;
           await profile.save();
       }
 
       re.status = 'accepted';
-      await req.save();
+
+      await team.save();
+      await re.save();
 
     const notification = await createNotification({
     user: re.sender,

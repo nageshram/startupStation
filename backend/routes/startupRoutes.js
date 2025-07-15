@@ -6,17 +6,25 @@ import {
   deleteStartup,
   addInvestor,
   addRole,
-  getAllStartups
+  getAllStartups,
+  removeInvestor,
+  removeRole,
+  unAssignRole
 } from '../controllers/startupController.js';
+
+import auth  from '../middlewares/auth.js';
 
 const router = express.Router();
 
-router.post('/create', createStartup);
-router.get('/:id', getStartup);
+router.post('/create', auth, createStartup);
+router.get('/:id', auth, getStartup);
 router.get('/', getAllStartups);
-router.put('/:id', updateStartup);
+router.put('/:id',auth, updateStartup);
 router.delete('/:id', deleteStartup);
-router.post('/add-investor', addInvestor);
-router.post('/add-role', addRole);
+router.post('/add-investor',auth, addInvestor);
+router.post('/add-role', auth, addRole);
+router.post('/remove-role', auth, removeRole);
+router.post('/remove-investor', auth, removeInvestor);
+router.post('/unassign-role', auth, unAssignRole);
 
 export default router;

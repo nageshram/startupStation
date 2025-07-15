@@ -42,9 +42,27 @@ export const addUser = async (req, res )=>{
 }
 
 export const getAllUsers = async (req, res) => {
-    const users = await User.find();
-    return res.status(200).json(users);
-}
+  try {
+    const page = parseInt(req.query.page) || 1;        // default page = 1
+    const limit = parseInt(req.query.limit) || 10;     // default limit = 10
+    const skip = (page - 1) * limit;
+
+    const total = await User.countDocuments();
+    const users = await User.find()
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+      users,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
 export const getSingleUser = async (req, res) =>{
 
@@ -58,7 +76,7 @@ export const getSingleUser = async (req, res) =>{
               .populate('documentIds')
               .populate('taskGroup')
               .populate('requestGroup')
-              .populate('teamId').populate('teamId.roles');
+              .populate( { path:'teamId', populate:{ path:'roles.assignedTo', select:'name username photo designation'} });
         
         if (startupId)
         {
@@ -75,11 +93,16 @@ export const getSingleUser = async (req, res) =>{
           const dev = await DevProfile.findOne({ user: user.id })
             .populate('user')
             .populate('skills')
-            .populate('desc');
+            .populate('desc')
+            .populate({ path: 'teamId', populate:{ path :'startupId', select :' _id name desc '}});
             if(dev)
             {
               return res.status(200).json({ ...user.toObject(),dev});
             }
+        }
+        if(user.designation === 'Investor')
+        {
+          const startups = await Startup.findMany({ investors : $in { req.user.id }});
         }
         res.status(200).json(user)
     }
@@ -126,7 +149,7 @@ export const updateUserPatch = async (req,res) => {
 export const deleteUser = async (req,res) => {
 
     try{
-        const deleted = await User.findByIdAndDelete(req.user.id);
+        const deleted = await User.findByIdAndDelete(req.params.id);
         if(!deleted)
         {
             res.status(404).json({message:"user not found "});
