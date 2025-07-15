@@ -64,14 +64,6 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
     }
   };
 
-  const rejectRequest = async ( id ) =>
-  {
-    const res = await authFetch(`http://localhost:5000/api/requests/reject/${id}`, { method: 'PUT'});
-    if(!res.ok){ alert(res.msg); return;}
-    else{
-      alert("Request rejected");
-    }
-  }
 
   const sendInvestRequest = async (startupId, desc) => {
     try {

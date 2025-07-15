@@ -30,7 +30,7 @@ const Documents = () => {
   if (loading) return <div className="text-center py-4">Loading documents...</div>;
 
   return (
-    <div className="p-4 max-w-5xl mx-auto">
+    <div className="p-4 w-full mx-auto">
       <h1 className="text-2xl font-bold text-pink-700 mb-4">Documents</h1>
 
       {documents.length === 0 ? (

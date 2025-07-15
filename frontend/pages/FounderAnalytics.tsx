@@ -21,7 +21,7 @@ const FounderAnalytics = () => {
   if (user?.designation !== 'Founder') return <p>Unauthorised access</p>
 
   return (
-    <div className="p-4 bg-white shadow-md rounded-lg">
+    <div className="p-4 w-full bg-white shadow-md rounded-lg">
       <h2 className="text-xl font-bold text-pink-700 mb-4">Startup Analytics</h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -1,6 +1,6 @@
 import Startup from '../models/startup.js';
 import Task from '../models/tasks.js';
-import Team from '../models/Team.js';
+import Team from '../models/team.js';
 
 export const getInvestorStartups = async (req, res) => {
   try {

@@ -55,7 +55,7 @@ const AllStartups = () => {
   if (user?.designation !== 'Admin') return <div className="p-4 text-red-600">Access Denied</div>;
 
   return (
-    <div className="p-4">
+    <div className="p-4 w-full">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold text-pink-600">All Startups</h2>
         <select

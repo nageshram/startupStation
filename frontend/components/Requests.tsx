@@ -1,22 +1,17 @@
 import { useState, useEffect } from 'react';
 import { authFetch } from '../utils/authFetch.js';
 import { Delete, DeleteIcon } from 'lucide-react';
+import { toast } from 'react-toastify';
+import { useUser } from '../pages/UserContext.js';
 
 const Requests = () => {
   const [sent, setSent] = useState([]);
   const [received, setReceived] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
+  const {user, refreshUser} = useUser();
   const [filter, setFilter] = useState('all');
+  
 
-  useEffect(() => {
-    authFetch('http://localhost:5000/api/users', { method: 'GET' })
-      .then(response => response.json())
-      .then(setUser)
-      .catch(error => {
-        console.error('Error fetching user data:', error);
-      });
-  }, []);
 
   useEffect(() => {
     authFetch('http://localhost:5000/api/requests', {
@@ -43,7 +38,7 @@ const Requests = () => {
     const data = await response.json();
     if (data) {
       setSent(prev => prev.filter(request => request._id !== reqId));
-      alert('Request deleted successfully');
+      toast.success('Request deleted successfully');
 
     }
   };
@@ -57,7 +52,8 @@ const Requests = () => {
     const data = await response.json();
     if (data) {
       setReceived(prev => prev.map(request => request._id === reqId ? { ...request, status: 'accepted' } : request));
-      alert('Request accepted successfully');
+        await refreshUser();
+        toast.success('Request accepted successfully');
     }
   };
 
@@ -70,7 +66,8 @@ const Requests = () => {
     const data = await response.json();
     if (data) {
       setReceived(prev => prev.map(request => request._id === reqId ? { ...request, status: 'accepted' } : request));
-      alert('Request accepted successfully');
+      await refreshUser();
+      toast.success('Request accepted successfully');
     }
   };
 
@@ -82,15 +79,24 @@ const Requests = () => {
     });
     if (response.status === 400) {  
       const data = await response.json();
-      alert(data.msg || 'Failed to confirm job proposal');
+      toast.error(data.msg || 'Failed to confirm job proposal');
       return;
     }
     const data = await response.json();
     if (data) {
       setReceived(prev => prev.map(request => request._id === reqId ? { ...request, status: 'completed' } : request));
-      alert('Job proposal confirmed successfully');
+      await refreshUser();
+      toast.success('Job proposal confirmed successfully');
     }
   };
+  const rejectRequest = async ( id ) =>
+    {
+      const res = await authFetch(`http://localhost:5000/api/requests/reject/${id}`, { method: 'PUT'});
+      if(!res.ok){ toast.error(res.msg); return;}
+      else{
+        toast.success("Request rejected");
+      }
+    }
 
   const confirmInvestProposal = async (reqId) => {
     const response = await authFetch(`http://localhost:5000/api/requests/${reqId}/confirm/invest-proposal`, {
@@ -100,7 +106,9 @@ const Requests = () => {
     const data = await response.json();
     if (data) {
       setReceived(prev => prev.map(request => request._id === reqId ? { ...request, status: 'completed' } : request));
-      alert('Investment proposal confirmed successfully');
+      await refreshUser();
+      toast.success('Investment proposal confirmed successfully');
+
     }
   };
 
@@ -235,6 +243,15 @@ const Requests = () => {
 
              )  }
               
+              { (request.status !== 'completed' && request.status !== 'accepted') && (
+                <>
+                <button onClick={() => rejectRequest(request._id)} className="bg-red-800 text-white px-4 py-1 rounded mt-2">
+                  Reject
+                </button>
+                </>
+              )
+
+              }
 
             </div>
           )) : <p className="text-gray-500">No requests received yet.</p>}

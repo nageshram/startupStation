@@ -1,5 +1,6 @@
 import { MapPin, Phone, Mail, Twitter, Linkedin, Github } from "lucide-react";
 import { useState }  from 'react'
+import { toast } from 'react-toastify'
 
 export const Contact = ()=>{
       const [formData, setFormData] = useState({
@@ -25,17 +26,17 @@ const handleSubmit = async (e)=>
           body:JSON.stringify(formData)
         });
         if (res.status == 200){   
-          alert("Message sent Successfully!.");
+          toast.success("Message sent Successfully!.");
           setFormData({name:"",email:"",message:""});
         }
         else if (res.status==500){
-          alert("Error : "+ res.json());
+          toast.error("Error : "+ res.json());
         }
     }
     catch(err)
     {
      console.log(err);
-     alert("Something went wrong..")
+     toast.error("Something went wrong..")
     }
    };
 
@@ -68,7 +69,7 @@ const handleSubmit = async (e)=>
                     </div>
                     <div>
                       <h4 className="font-semibold text-gray-900">Phone</h4>
-                      <p className="text-gray-600">+91 12354 45627</p>
+                      <p className="text-gray-600">+91 123 456 7684</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-4">
@@ -77,7 +78,7 @@ const handleSubmit = async (e)=>
                     </div>
                     <div>
                       <h4 className="font-semibold text-gray-900">Email</h4>
-                      <p className="text-gray-600">hello@startstation.com</p>
+                      <p className="text-gray-600">nagesha2r@gmail.com</p>
                     </div>
                   </div>
                 </div>

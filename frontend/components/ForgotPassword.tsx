@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {Framer  } from 'lucide-react'
+import { toast } from 'react-toastify'
 
 export const ForgotPassword = () => {
   const [step, setStep] = useState(1);
@@ -77,7 +78,7 @@ export const ForgotPassword = () => {
 
       const data = await res.json();
       if (res.ok) {
-        alert('Password reset successful!');
+        toast.success('Password reset successful!');
         setStep(1);
         navigate('/login');
         setEmail('');

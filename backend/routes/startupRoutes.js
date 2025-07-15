@@ -9,7 +9,8 @@ import {
   getAllStartups,
   removeInvestor,
   removeRole,
-  unAssignRole
+  unAssignRole,
+  updateStartupPatch
 } from '../controllers/startupController.js';
 
 import auth  from '../middlewares/auth.js';
@@ -20,6 +21,7 @@ router.post('/create', auth, createStartup);
 router.get('/:id', auth, getStartup);
 router.get('/', getAllStartups);
 router.put('/:id',auth, updateStartup);
+router.patch('/:id', updateStartupPatch)
 router.delete('/:id', deleteStartup);
 router.post('/add-investor',auth, addInvestor);
 router.post('/add-role', auth, addRole);

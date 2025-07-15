@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { authFetch } from '../utils/authFetch';
+import { toast } from 'react-toastify'
 
 const UpdateProfile = () => {
   const [editing, setEditing] = useState(false);
@@ -115,7 +116,7 @@ const UpdateProfile = () => {
 
       setEditing(false);
       setError('');
-      alert('Profile updated!');
+      toast.success('Profile updated!');
     } catch (err) {
       setError('Failed to update profile');
     }

@@ -2,6 +2,7 @@ import { Framer } from "lucide-react";
 import type { FormEvent, ChangeEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {useState, useRef } from 'react'
+import { toast } from 'react-toastify'
 
 export const SignupPage =() =>
 {
@@ -34,12 +35,12 @@ export const SignupPage =() =>
 
         if( available != "available" && Emailavailable!="available")
         {   
-            alert("All fields are necessary");
+            toast.info("All fields are necessary");
             return;
         }
         if(emailRef.current.value=='' || usernameRef.current.value=='' )
         {
-             alert("All fields are necessary");
+             toast.info("All fields are necessary");
             return;
         }
 

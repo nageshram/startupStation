@@ -9,6 +9,5 @@ const teamSchema = new mongoose.Schema({
   startupId: { type: mongoose.Schema.Types.ObjectId, ref: 'Startup' },
   roles: [roleSchema]
 });
-
 const Team= mongoose.model('Team', teamSchema);
 export default Team;

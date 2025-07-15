@@ -10,15 +10,11 @@ const Dashboard = () => {
   const [notifications, setNotifications] = useState([]);
   const [errors, setErrors] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { user, setUser } = useUser();
+  const { user } = useUser();
   const location = useLocation();
 
   useEffect(() => {
-    authFetch("http://localhost:5000/api/users", { method: "GET" })
-      .then((res) => res.json())
-      .then(setUser)
-      .catch(() => setErrors("Failed to load user"));
-
+   
     authFetch("http://localhost:5000/api/notifications", { method: "GET" })
       .then((res) => res.json())
       .then(setNotifications)

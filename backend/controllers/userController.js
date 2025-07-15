@@ -100,10 +100,7 @@ export const getSingleUser = async (req, res) =>{
               return res.status(200).json({ ...user.toObject(),dev});
             }
         }
-        if(user.designation === 'Investor')
-        {
-          const startups = await Startup.findMany({ investors : $in { req.user.id }});
-        }
+        
         res.status(200).json(user)
     }
     catch(err)

@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { authFetch } from '../utils/authFetch.js'; // Ensure this path is correct
+import { toast } from 'react-toastify'
 
 const ResignModal = ({ isOpen, onClose, startupId }) => {
   const [desc, setDesc] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleResignSubmit = async () => {
-    if (!desc.trim()) return alert("Please enter reason for resignation");
+    if (!desc.trim()) return toast.info("Please enter reason for resignation");
     setLoading(true);
 
     try {
@@ -18,14 +19,14 @@ const ResignModal = ({ isOpen, onClose, startupId }) => {
 
       const data = await response.json();
       if (response.ok) {
-        alert('Resignation request sent successfully');
+        toast.success('Resignation request sent successfully');
         onClose();
         setDesc('');
       } else {
-        alert(data.message || 'Failed to send resignation request');
+        toast.error(data.message || 'Failed to send resignation request');
       }
     } catch (err) {
-      alert('Error submitting resignation request');
+      toast.error('Error submitting resignation request');
     } finally {
       setLoading(false);
     }
@@ -34,7 +35,7 @@ const ResignModal = ({ isOpen, onClose, startupId }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50  bg-gray-300 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 m-5 bg-gray-300 flex items-center justify-center">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 space-y-4">
         <h2 className="text-xl font-semibold text-pink-700">Submit Resignation Request</h2>
         <textarea

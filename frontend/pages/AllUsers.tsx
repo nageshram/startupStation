@@ -35,7 +35,7 @@ const AllUsers = () => {
   };
 
   return (
-    <div className="p-4 text-gray-700">
+    <div className="p-4 w-full text-gray-700">
       <h1 className="text-xl font-bold text-pink-700 mb-4">All Users</h1>
 
       <div className="flex items-center gap-4 mb-4">

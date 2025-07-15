@@ -37,7 +37,7 @@ const Sidebar = ( {user} ) =>
                 </>
             )}
 
-            {user.designation === 'Founder' && user?.startupId (
+            {user.designation === 'Founder' && user?.startupId && (
 
                 <>
                  <li className="py-2"><Link  to="/dashboard/founder-analytics" className="text-gray-50 text-lg  hover:text-pink-700">Analytics</Link>   </li>

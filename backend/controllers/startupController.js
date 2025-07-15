@@ -7,7 +7,7 @@ import Request from '../models/request.js'
 
 export const createStartup = async (req, res) => {
   try {
-    const { name, photo, desc, teamRoles } = req.body;
+    const { name,desc, teamRoles, photo } = req.body;
     const founderId = req.user.id;
     const teamList = teamRoles.split(',').filter(s => s !== '');
 
@@ -77,6 +77,19 @@ export const getAllStartups = async (req, res) => {
 
 // Update startup basic details
 export const updateStartup = async (req, res) => {
+  try {
+    const updated = await Startup.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { new: true }
+    );
+    res.status(200).json(updated);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const updateStartupPatch = async (req, res) => {
   try {
     const updated = await Startup.findByIdAndUpdate(
       req.params.id,
