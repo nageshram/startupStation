@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom"
+const BASE_URL = import.meta.env.VITE_API_URL
 
 const Sidebar = ( {user} ) =>
 {
@@ -11,7 +12,7 @@ const Sidebar = ( {user} ) =>
         <div className="basicDetails flex justify-center flex-col my-2 pb-3 items-center gap-2 border-b-2 border-gray-400">
          
           <img
-                src={  'http://localhost:5000/api/upload/profile_pics/'+ user.photo || "default.jpg"} onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/profile_pics/default.jpg'; }}
+                src={  `${BASE_URL}/api/upload/profile_pics/`+ user.photo || "default.jpg"} onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/profile_pics/default.jpg`; }}
                 alt="Founder"
                 className="w-20 h-20 rounded-full object-cover border"
                 />

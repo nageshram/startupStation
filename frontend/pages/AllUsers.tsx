@@ -7,10 +7,12 @@ const AllUsers = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [designationFilter, setDesignationFilter] = useState('');
-  const { user } = useUser();
+  //const { user } = useUser();
+  const [users, setUsers ] = useState([])
+  
 
   const fetchUsers = async (page = 1, designation = '') => {
-    const res = await authFetch(`http://localhost:5000/api/users/all?page=${page}&limit=6${designation ? `&designation=${designation}` : ''}`);
+    const res = await authFetch(`/api/users/all?page=${page}&limit=6${designation ? `&designation=${designation}` : ''}`);
     const data = await res.json();
     setUsers(data.users);
     setPage(data.page);
@@ -24,7 +26,7 @@ const AllUsers = () => {
   const handleDelete = async (userId) => {
     const confirmed = window.confirm('Are you sure you want to delete this user?');
     if (!confirmed) return;
-    const res = await authFetch(`http://localhost:5000/api/users/${userId}`, { method: 'DELETE' });
+    const res = await authFetch(`/api/users/${userId}`, { method: 'DELETE' });
     if (res.ok) {
       fetchUsers(page);
     }
@@ -62,7 +64,7 @@ const AllUsers = () => {
         {users.map((user) => (
           <div key={user._id} className="border border-gray-400 rounded shadow p-4 bg-white relative">
             <div className="absolute top-2 right-2 cursor-pointer text-red-600 hover:text-red-800">
-              <Trash2 onClick={() => handleDelete(user._id)} />
+              <p onClick={() => handleDelete(user._id)}>Delete </p>
             </div>
             <p><strong>Name:</strong> {user.name}</p>
             <p><strong>Username:</strong> {user.username}</p>

@@ -29,26 +29,25 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-app.use(cookieParser())
-
-app.use(express.json());
-
 
 dotenv.config();
-app.use(cors({
-  origin:'http://localhost:5173',
-  credentials:true,
-}));
 
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-  origin:'http://localhost:5173',
+  origin:process.env.ORIGIN_URL,
   credentials:true
   }
 });
+app.use(cors({
+  origin:process.env.ORIGIN_URL,
+  credentials:true,
+}));
 
+app.use(cookieParser())
+
+app.use(express.json());
 
 
 app.use('backend/uploads', express.static(path.join(__dirname, 'backend/uploads')));
@@ -82,15 +81,16 @@ app.get("/", (req, res)=>{
 
 //console.log(process.env.MONGO_URI);
 const port = process.env.PORT || 5000;
-
+/*
 app.listen(port,()=>{
    connectDB();  
-    console.log("Express Server running at http://localhost:"+ port);
+    console.log("Express Server running at "+ port);
 });
-
-const socketPort = process.env.SOCKET_PORT || 5050
-server.listen(socketPort,()=>
-{
-  console.log("Socket Server is running on http:localhost:"+ socketPort)
+*/
+//const socketPort = process.env.SOCKET_PORT || 5050
+server.listen(port,()=>
+{ 
+  connectDB();  
+  console.log("Server is running at "+ port)
 })
 

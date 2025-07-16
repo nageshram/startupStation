@@ -15,7 +15,7 @@ const InvestorAnalytics = () => {
   if(user.designation !== 'Investor') return(<><p className="text-pink-600 font-medium">Unauthorised accces</p></>);
 
   useEffect(() => {
-    authFetch('http://localhost:5000/api/analytics/investor-startups')
+    authFetch('/api/analytics/investor-startups')
       .then(res => res.json())
       .then(data => {
         setStartups(data);
@@ -27,7 +27,7 @@ const InvestorAnalytics = () => {
 
   useEffect(() => {
     if (selectedStartup) {
-      authFetch(`http://localhost:5000/api/analytics/startup/${selectedStartup}`)
+      authFetch(`/api/analytics/startup/${selectedStartup}`)
         .then(res => res.json())
         .then(setAnalytics);
     }

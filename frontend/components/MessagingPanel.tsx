@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import socket from '../utils/socket';
 import { authFetch } from '../utils/authFetch';
 import Messagesocket from '../utils/socket.js'; // Assuming this is the correct import for your messaging socket
+const BASE_URL = import.meta.env.VITE_API_URL
 
 const MessagingPanel = ({ user, activeChatUser, setActiveChatUser, setErrors }) => {
   const [chatList, setChatList] = useState([]);
@@ -19,7 +20,7 @@ const MessagingPanel = ({ user, activeChatUser, setActiveChatUser, setErrors }) 
 
   useEffect( () => {
     if (!user) return;
-    authFetch('http://localhost:5000/api/messages/contact/chatlist')
+    authFetch(`/api/messages/contact/chatlist`)
       .then((res) => res.json())
       .then(setChatList)
       .catch(() => setErrors('Failed to load chat list'));
@@ -27,7 +28,7 @@ const MessagingPanel = ({ user, activeChatUser, setActiveChatUser, setErrors }) 
 
   useEffect(() => {
     if (activeChatUser) {
-      authFetch(`http://localhost:5000/api/messages/with/${activeChatUser.username}`)
+      authFetch(`/api/messages/with/${activeChatUser.username}`)
         .then((res) => res.json())
         .then(setMessages)
         .catch(() => setErrors('Failed to load messages'));
@@ -65,7 +66,7 @@ const MessagingPanel = ({ user, activeChatUser, setActiveChatUser, setErrors }) 
       text: newMessage.trim(),
     };
     try {
-      const res = await authFetch('http://localhost:5000/api/messages', {
+      const res = await authFetch('/api/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(msg)
@@ -100,7 +101,7 @@ const MessagingPanel = ({ user, activeChatUser, setActiveChatUser, setErrors }) 
       return;
     }
     try {
-      const res = await authFetch(`http://localhost:5000/api/messages/search/users?q=${e.target.value}`);
+      const res = await authFetch(`/api/messages/search/users?q=${e.target.value}`);
       const users = await res.json();
       setSearchResults(users.filter(u => u.username !== user.username));
     } catch {
@@ -138,8 +139,8 @@ const MessagingPanel = ({ user, activeChatUser, setActiveChatUser, setErrors }) 
             &#8592;
           </button>
           <img
-            src={ activeChatUser.photo ? 'http://localhost:5000/api/upload/profile_pics/'+ activeChatUser.photo : 'http://localhost:5000/api/upload/profile_pics/default.jpg'}
-            onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/profile_pics/default.jpg'; }}
+            src={ activeChatUser.photo ? `${BASE_URL}/api/upload/profile_pics/`+ activeChatUser.photo : `${BASE_URL}/api/upload/profile_pics/default.jpg`}
+            onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/profile_pics/default.jpg`; }}
             className="w-9 h-9 rounded-full object-cover border mr-2"
             alt=""
           />
@@ -171,8 +172,8 @@ const MessagingPanel = ({ user, activeChatUser, setActiveChatUser, setErrors }) 
               }}
             >
               <img
-                src={u.photo ? 'http://localhost:5000/api/upload/profile_pics/' + u.photo : 'http://localhost:5000/api/upload/profile_pics/default.jpg'}
-                onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/profile_pics/default.jpg'; }}
+                src={u.photo ? `${BASE_URL}/api/upload/profile_pics/` + u.photo : `${BASE_URL}/api/upload/profile_pics/default.jpg`}
+                onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/profile_pics/default.jpg`; }}
                 className="w-8 h-8 rounded-full object-cover"
                 alt=""
               />
@@ -202,8 +203,8 @@ const MessagingPanel = ({ user, activeChatUser, setActiveChatUser, setErrors }) 
                   activeChatUser?.username === chat.user.username ? 'bg-pink-100' : ''
                 }`}
               >
-                <img src={chat.user.photo ?  'http://localhost:5000/api/upload/profile_pics/' + chat.user.photo : 'http://localhost:5000/api/upload/profile_pics/default.jpg'} 
-                onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/profile_pics/default.jpg'; }}
+                <img src={chat.user.photo ?  `${BASE_URL}/api/upload/profile_pics/` + chat.user.photo : `${BASE_URL}/api/upload/profile_pics/default.jpg`} 
+                onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/profile_pics/default.jpg`; }}
                 className="w-9 h-9 rounded-full object-cover border" alt="" />
                 <div>
                   <div className="font-semibold text-gray-800 text-sm">{chat.user.name}</div>

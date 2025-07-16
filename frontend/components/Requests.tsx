@@ -14,7 +14,7 @@ const Requests = () => {
 
 
   useEffect(() => {
-    authFetch('http://localhost:5000/api/requests', {
+    authFetch('/api/requests', {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     })
@@ -31,7 +31,7 @@ const Requests = () => {
   }, []);
 
   const deleteReq = async (reqId) => {
-    const response = await authFetch(`http://localhost:5000/api/requests/${reqId}`, {
+    const response = await authFetch(`/api/requests/${reqId}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
     });
@@ -44,7 +44,7 @@ const Requests = () => {
   };
 
   const acceptReq = async (reqId) => {
-    const response = await authFetch(`http://localhost:5000/api/requests/${reqId}/accept`, {
+    const response = await authFetch(`/api/requests/${reqId}/accept`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
     });
@@ -58,7 +58,7 @@ const Requests = () => {
   };
 
  const acceptResignReq= async (reqId) => {
-    const response = await authFetch(`http://localhost:5000/api/requests/accept/resign/${reqId}`, {
+    const response = await authFetch(`/api/requests/accept/resign/${reqId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
     });
@@ -73,7 +73,7 @@ const Requests = () => {
 
 
   const confirmJobProposal = async (reqId) => {
-    const response = await authFetch(`http://localhost:5000/api/requests/${reqId}/confirm/job-proposal`, {
+    const response = await authFetch(`/api/requests/${reqId}/confirm/job-proposal`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
     });
@@ -91,15 +91,16 @@ const Requests = () => {
   };
   const rejectRequest = async ( id ) =>
     {
-      const res = await authFetch(`http://localhost:5000/api/requests/reject/${id}`, { method: 'PUT'});
+      const res = await authFetch(`/api/requests/reject/${id}`, { method: 'PUT'});
       if(!res.ok){ toast.error(res.msg); return;}
       else{
+        setReceived(prev => prev.map(request => request._id === id ? { ...request, status: 'rejected' } : request));
         toast.success("Request rejected");
       }
     }
 
   const confirmInvestProposal = async (reqId) => {
-    const response = await authFetch(`http://localhost:5000/api/requests/${reqId}/confirm/invest-proposal`, {
+    const response = await authFetch(`/api/requests/${reqId}/confirm/invest-proposal`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
     });
@@ -180,7 +181,7 @@ const Requests = () => {
                { request.status === 'pending' && <p className="bg-yellow-300 p-1 w-20 rounded-sm text-center text-gray-800 my-1">Pending</p> }
               { request.status === 'accepted' && <p className="bg-green-500 p-1 w-20 rounded-sm text-center text-gray-50 my-1">Accepted</p> }
               { request.status === 'completed' && <p className="bg-blue-500 p-1 w-25 rounded-sm text-center text-gray-50 my-1">Completed</p> }
-              { request.status === 'rejected' && <p className="bg-red-500 p-1 w-20 rounded-sm text-center text-gray-800 my-1">Rejected</p> }
+             
               <p className="text-gray-600 p-2">{request.desc}</p>
 
               { request.type === 'resignation' && (
@@ -213,6 +214,7 @@ const Requests = () => {
                     </>
     
               )}
+
                 </>
               )}
 
@@ -230,20 +232,20 @@ const Requests = () => {
               )}
 
 
-
+ 
                 </>
              ): (
               <>
                 { user?.designation === 'Dev' && request.status !== 'completed' && (
                   <>
-                  <p className="text-gray-700 p-1"> Dear user you can't join other startups before resigning to the current startup. </p>
+                  <p className="text-gray-700 "> Dear user you can't join other startups before resigning to the current startup. </p>
                 </>
                 )}
                 </>
 
              )  }
               
-              { (request.status !== 'completed' && request.status !== 'accepted') && (
+              { (request.status !== 'completed' && request.status !== 'accepted' && request.status !== 'rejected') && (
                 <>
                 <button onClick={() => rejectRequest(request._id)} className="bg-red-800 text-white px-4 py-1 rounded mt-2">
                   Reject
@@ -252,6 +254,7 @@ const Requests = () => {
               )
 
               }
+               { request.status === 'rejected' && <p className="p-1 rounded-sm  flextext-center text-gray-800 my-1"> You Rejected this request</p> }
 
             </div>
           )) : <p className="text-gray-500">No requests received yet.</p>}

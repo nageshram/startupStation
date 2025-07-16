@@ -3,6 +3,7 @@ import type { FormEvent, ChangeEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {useState, useRef } from 'react'
 import { toast } from 'react-toastify'
+const BASE_URL = import.meta.env.VITE_API_URL
 
 export const SignupPage =() =>
 {
@@ -44,7 +45,7 @@ export const SignupPage =() =>
             return;
         }
 
-         const res = await fetch("http://localhost:5000/api/auth/signup",{
+         const res = await fetch("`${BASE_URL}/api/auth/signup",{
             method:"POST",
             headers:{"Content-Type":"application/json"},
             body:JSON.stringify(formData),
@@ -82,7 +83,7 @@ export const SignupPage =() =>
        }
         
         e.preventDefault();
-         const res = await fetch("http://localhost:5000/api/users/check-email",{
+         const res = await fetch(`${BASE_URL}/api/users/check-email`,{
             method:"POST",
             headers:{"Content-Type":"application/json"},
             body:JSON.stringify({"email":email})
@@ -129,7 +130,7 @@ export const SignupPage =() =>
         }
         setUserNameError("");
         e.preventDefault();
-         const res = await fetch("http://localhost:5000/api/users/check-username",{
+         const res = await fetch(`${BASE_URL}/api/users/check-username`,{
             method:"POST",
             headers:{"Content-Type":"application/json"},
             body:JSON.stringify({"username":username})

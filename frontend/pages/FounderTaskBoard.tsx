@@ -18,7 +18,7 @@ const FounderTaskBoard = ( ) => {
   const { user } = useUser();
 
   const fetchTasks = async () => {
-    const res = await authFetch(`http://localhost:5000/api/tasks/startup/${user.startupId._id}`);
+    const res = await authFetch(`/api/tasks/startup/${user.startupId._id}`);
     const data = await res.json();
     setTasks(data);
   };
@@ -28,7 +28,7 @@ const FounderTaskBoard = ( ) => {
   }, []);
 
   const handleDelete = async (id) => {
-    await authFetch(`http://localhost:5000/api/tasks/${id}`, { method: 'DELETE' });
+    await authFetch(`/api/tasks/${id}`, { method: 'DELETE' });
     fetchTasks();
   };
 
@@ -48,8 +48,8 @@ const FounderTaskBoard = ( ) => {
     e.preventDefault();
     const method = editTask ? 'PUT' : 'POST';
     const url = editTask
-      ? `http://localhost:5000/api/tasks/${editTask._id}`
-      : `http://localhost:5000/api/tasks`;
+      ? `/api/tasks/${editTask._id}`
+      : `/api/tasks`;
 
     await authFetch(url, {
       method,

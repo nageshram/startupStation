@@ -399,7 +399,9 @@ const role = startup.teamId.roles.find(role => role._id.toString() === re.target
 
     if (!assignRole) return res.status(404).json({ msg: 'Role not found in team' });
     assignRole.assignedTo = null;
-
+     
+    startup.openedRoles.push(roleName);
+    await startup.save();
   
   let profile = await DevProfile.findOne({ user: re.sender });
     //await startup.save();

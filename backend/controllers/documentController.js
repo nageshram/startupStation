@@ -21,3 +21,19 @@ export const getDocumentsForStartup = async (req, res) => {
   });
   res.json(docs);
 };
+
+export const getDocumentsForAdmin = async (re, res) => {
+  const docs = await Document.find().populate('userId' ,{select:'name username photo'}).populate('startupId', 'name founderId').populate({
+    path:'startupId',
+    populate:{
+      path:'founderId',
+      select:'name'
+    }
+  });
+  res.json(docs);
+}
+
+export const deleteDocument = async (req,res) =>{
+  const doc = await Document.findByIdAndDelete(req.params.id);
+  if(doc) res.status(200).json(doc);
+}

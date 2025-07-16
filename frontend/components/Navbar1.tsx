@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Bell, LogOut, Search } from 'lucide-react';
 import { authFetch } from '../utils/authFetch';
+const BASE_URL = import.meta.env.VITE_API_URL
 
 const Navbar = ({ user, notifications = [], setErrors, setNotifications, toggleSidebar }) => {
  // const [search, setSearch] = useState('');
@@ -24,7 +25,7 @@ const Navbar = ({ user, notifications = [], setErrors, setNotifications, toggleS
 
   const handleLogout = async () => {
     try {
-      await fetch('http://localhost:5000/api/auth/logout', { method: 'POST', credentials: 'include' });
+      await authFetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
       document.location.reload();
       navigate('/login');
     } catch (err) {
@@ -33,7 +34,7 @@ const Navbar = ({ user, notifications = [], setErrors, setNotifications, toggleS
   };
   const markAllAsSeen = async () => {
     try {
-      await fetch('http://localhost:5000/api/notifications/seen', {
+      await authFetch('/api/notifications/seen', {
         method: 'PUT',
         credentials: 'include',
       });
@@ -45,7 +46,7 @@ const Navbar = ({ user, notifications = [], setErrors, setNotifications, toggleS
 
   const clearNotifications = async () => {
     try {   
-          const res = await authFetch('http://localhost:5000/api/notifications/clear', {
+          const res = await authFetch('/api/notifications/clear', {
         method: 'DELETE'});
       if (res.ok) {
         console.log("Notifications cleared successfully");
@@ -62,7 +63,7 @@ const Navbar = ({ user, notifications = [], setErrors, setNotifications, toggleS
   useEffect(() => {
     if (dropdownOpen && notifications.length > 0) {
   
-     setTimeout(()=>{ markAllAsSeen(); },8000); 
+     setTimeout(()=>{ markAllAsSeen(); clearNotifications(); },10000); 
     }
     // eslint-disable-next-line
   }, [dropdownOpen]);
@@ -140,7 +141,7 @@ const Navbar = ({ user, notifications = [], setErrors, setNotifications, toggleS
         >
            
           <img
-                    src={  'http://localhost:5000/api/upload/profile_pics/'+ user?.photo || "/default.jpg"} onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/profile_pics/default.jpg'; }}
+                    src={  `${BASE_URL}/api/upload/profile_pics/`+ user?.photo || "/default.jpg"} onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/profile_pics/default.jpg`; }}
                     alt="Founder"
                     className="w-5 h-5 rounded-full object-cover border"
                   /> 
@@ -152,7 +153,7 @@ const Navbar = ({ user, notifications = [], setErrors, setNotifications, toggleS
           className="text-gray-700 hover:text-pink-700 font-semibold flex items-center gap-1"
         >  
           <img
- src={  'http://localhost:5000/api/upload/profile_pics/'+ user?.photo || "/default.jpg"} onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/profile_pics/default.jpg'; }}
+ src={  `${BASE_URL}/api/upload/profile_pics/`+ user?.photo || "/default.jpg"} onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/profile_pics/default.jpg`; }}
                     alt="Founder"
                     className="w-5 h-5 rounded-full object-cover border"
                   /> 

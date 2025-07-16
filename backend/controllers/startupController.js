@@ -193,7 +193,7 @@ export const removeRole = async (req, res) => {
     }
 
     // update devprofile teamId to un assign the role
-    if (team.roles.some(role => role._id.toString() === roleId.toString() && role.assignedTo)) {
+    if (team.roles.some(role => role._id.toString() === roleId.toString() && role.assignedTo !== null)) {
       
       await DevProfile.findByIdAndUpdate(role._id, { $unset: { teamId: null } }).catch(err => {
         console.error('Error unassigning role from DevProfile:', err);
@@ -201,7 +201,7 @@ export const removeRole = async (req, res) => {
 
     }
     // Remove role from team
-    team.roles = team.roles.filter(role => role._id !== roleId);
+    team.roles = team.roles.filter(role => role._id.toString() !== roleId.toString());
     await team.save();
     // Remove role from openedRoles
     startup.openedRoles = startup.openedRoles.filter(role => role !== role.roleName);

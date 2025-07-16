@@ -2,8 +2,9 @@
 import { io } from 'socket.io-client';
 //dotenv.config();
 
-// Automatically connects with backend Socket.IO server
-const socket = io('http://localhost:5600' , {
+const BASE_URL = import.meta.env.VITE_API_URL
+// Automatically connects with VITE Socket.IO server
+const socket = io(`${BASE_URL}` , {
   withCredentials: true,
   autoConnect: true, // Automatically connects
   transports: ['websocket'],

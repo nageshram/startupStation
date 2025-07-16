@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Framer } from "lucide-react"
 import { useState } from "react";
 import { toast } from 'react-toastify'
+const BASE_URL = import.meta.env.VITE_API_URL
 
 export const LoginPage = ()=>
 {
@@ -17,7 +18,7 @@ export const LoginPage = ()=>
     const handleSubmit = async (e)=>
     {    try{
          e.preventDefault();
-         const res = await fetch("http://localhost:5000/api/auth/login",{
+         const res = await fetch(`${BASE_URL}/api/auth/login`,{
             method:"POST",
             headers:{"Content-Type":"application/json"},
             credentials:'include',

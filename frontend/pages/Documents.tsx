@@ -12,9 +12,12 @@ const Documents = () => {
       try {
         let res;
         if (user.designation === 'Founder') {
-          res = await authFetch(`http://localhost:5000/api/documents/startup/${user?.startupId?._id}`);
-        } else {
-          res = await authFetch('http://localhost:5000/api/documents/user');
+          res = await authFetch(`/api/documents/startup/${user?.startupId?._id}`);
+        } else if (user.designation === 'Admin') {
+          res = await authFetch('/api/documents');
+        }
+        else{
+          res = await authFetch('/api/documents/user');
         }
         const data = await res.json();
         setDocuments(data);
@@ -27,6 +30,12 @@ const Documents = () => {
     fetchDocs();
   }, [user]);
 
+
+  const handleDelete = async(id) =>{
+         const res = await authFetch(`/api/documents/${id}`, { method: 'DELETE'});
+         if(res.ok) setDocuments((prev) => prev.filter( doc => doc._id !== id));
+
+  }
   if (loading) return <div className="text-center py-4">Loading documents...</div>;
 
   return (
@@ -45,6 +54,7 @@ const Documents = () => {
                 <p><span className="font-medium">Startup:</span> {doc.startupId?.name}</p>
                 <p><span className="font-medium">Founder:</span> {doc.startupId?.founderId?.name}</p>
                 <p><span className="font-medium">User:</span> {doc.userId?.name} (@{doc.userId?.username})</p>
+                <button onClick={() =>{ handleDelete(doc._id); }} className="text-red-500" >Delete</button>
               </div>
             </div>
           ))}

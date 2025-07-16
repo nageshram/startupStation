@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { authFetch } from '../utils/authFetch';
 import { toast } from 'react-toastify'
+import { useUser } from '../pages/UserContext.tsx'
 
+const BASE_URL = import.meta.env.VITE_API_URL
 const UpdateProfile = () => {
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({});
@@ -11,15 +13,15 @@ const UpdateProfile = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const fileInputRef = useRef(null);
-
+  const { user , refreshUser } = useUser();
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await authFetch('http://localhost:5000/api/users', { method: 'GET' });
+        const res = await authFetch('/api/users', { method: 'GET' });
         const userData = await res.json();
         setForm(userData);
         if (userData.photo) {
-          const imgUrl = `http://localhost:5000/api/upload/profile_pics/${userData.photo}`;
+          const imgUrl = `${BASE_URL}/api/upload/profile_pics/${userData.photo}`;
           try {
             const imgRes = await fetch(imgUrl, { method: 'GET' });
             if (imgRes.ok) {
@@ -35,7 +37,7 @@ const UpdateProfile = () => {
         }
 
         if (userData.designation === 'Dev') {
-          const devRes = await authFetch('http://localhost:5000/api/users/dev/profile', { method: 'GET' });
+          const devRes = await authFetch('/api/users/dev/profile', { method: 'GET' });
           if (devRes.ok) {
             const devData = await devRes.json();
             setDevProfile(devData);
@@ -69,16 +71,18 @@ const UpdateProfile = () => {
     try {
       let photoFilename = form.photo;
 
-      if (profilePic && typeof profilePic !== 'string') {
+      if (profilePic) {
         const imgForm = new FormData();
         imgForm.append('image', profilePic);
         imgForm.append('type', 'profile');
-        const imgRes = await fetch('http://localhost:5000/api/upload', {
+
+        const imgRes = await authFetch('/api/upload', {
           method: 'POST',
           body: imgForm,
         });
         if (!imgRes.ok) throw new Error('Image upload failed');
         const imgData = await imgRes.json();
+        console.log(imgData.filename);
         photoFilename = imgData.filename;
       }
 
@@ -90,13 +94,16 @@ const UpdateProfile = () => {
       });
       if (photoFilename) updateData.photo = photoFilename;
       if (password.trim()) updateData.password = password;
-
-      const res = await authFetch('http://localhost:5000/api/users', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updateData),
-      });
-      if (!res.ok) throw new Error();
+       if(updateData)
+       {
+        const res = await authFetch('/api/users',
+           { method: 'PUT',
+             headers :{'Content-Type':'application/json'},
+             body:JSON.stringify(updateData)});
+             if(!res.ok) toast.error("Failed to update user");
+             else{ await refreshUser(); }
+        
+       }
 
       if (form.designation === 'Dev') {
         const devProfileToSend = {};
@@ -106,7 +113,7 @@ const UpdateProfile = () => {
           }
         });
         if (Object.keys(devProfileToSend).length > 0) {
-          const devRes = await authFetch('http://localhost:5000/api/users/dev/profile', {
+          const devRes = await authFetch('/api/users/dev/profile', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(devProfileToSend),
@@ -140,9 +147,9 @@ const UpdateProfile = () => {
                 previewPic
                   ? previewPic
                   : profilePic && typeof profilePic === 'string'
-                  ? `http://localhost:5000/api/upload/profile_pics/${profilePic}`
+                  ? `${BASE_URL}/api/upload/profile_pics/${profilePic}`
                   : 'default.jpg'
-              } onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/profile_pics/default.jpg'; }}
+              } onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/profile_pics/default.jpg`; }}
               alt="Profile"
               className="w-24 h-24 rounded-full object-cover border"
             />

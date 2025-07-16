@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {Framer  } from 'lucide-react'
 import { toast } from 'react-toastify'
+import { authFetch } from '../utils/authFetch';
+const BASE_URL = import.meta.env.VITE_API_URL
 
 export const ForgotPassword = () => {
   const [step, setStep] = useState(1);
@@ -41,7 +43,7 @@ export const ForgotPassword = () => {
     setError('');
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/send-otp", {
+      const res = await fetch(`${BASE_URL}/api/auth/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -70,7 +72,7 @@ export const ForgotPassword = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/reset-password-otp", {
+      const res = await fetch(`${BASE_URL}/api/auth/reset-password-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp, newPassword }),

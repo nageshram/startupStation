@@ -10,7 +10,7 @@ const FounderAnalytics = () => {
 
   useEffect(() => {
     if (user?.startupId?._id) {
-      authFetch(`http://localhost:5000/api/analytics/startup/${user?.startupId?._id}`)
+      authFetch(`/api/analytics/startup/${user?.startupId?._id}`)
         .then(res => res.json())
         .then(setAnalytics)
         .catch(err => console.error('Failed to fetch analytics', err));

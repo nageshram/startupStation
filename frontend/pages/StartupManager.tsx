@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { authFetch } from '../utils/authFetch';
 import { useUser } from '../pages/UserContext.tsx';
 import { toast } from 'react-toastify';
+const BASE_URL = import.meta.env.VITE_API_URL
 
 const StartupManager = () => {
   const [form, setForm] = useState({ name: '', desc: '', status: 'active', teamRoles: '', photo: 'default.jpg' });
@@ -38,7 +39,7 @@ const StartupManager = () => {
     const formData = new FormData();
     formData.append('image', photoFile);
     formData.append('type', 'startup');
-    const res = await fetch('http://localhost:5000/api/upload', { method: 'POST', body: formData });
+    const res = await authFetch('/api/upload', { method: 'POST', body: formData });
     if (res.ok) {
       const data = await res.json();
       return data.filename;
@@ -67,8 +68,8 @@ const StartupManager = () => {
 
     const method = user?.startupId ? 'PATCH' : 'POST';
     const url = user?.startupId
-      ? `http://localhost:5000/api/startup/${user.startupId._id}`
-      : 'http://localhost:5000/api/startup/create';
+      ? `/api/startup/${user.startupId._id}`
+      : '/api/startup/create';
 
     const res = await authFetch(url, {
       method,
@@ -78,6 +79,7 @@ const StartupManager = () => {
 
     if (res.ok) {
       const data = await res.json();
+      await refreshUser();
       toast.success(user?.startupId ? 'Startup updated!' : 'Startup created!');
       setForm({ ...form, photo: photoToUse });
       if (!user?.startupId) await refreshUser();  //window.location.reload();
@@ -86,7 +88,7 @@ const StartupManager = () => {
 
   const handleAddRole = async () => {
     if (!newRole || !user?.startupId) return;
-    const res = await authFetch('http://localhost:5000/api/startup/add-role', {
+    const res = await authFetch('/api/startup/add-role', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ startupId: user.startupId._id, roleName: newRole }),
@@ -95,24 +97,26 @@ const StartupManager = () => {
       const newData = await res.json();
       setTeam(prev => [...prev, newData.role]);
       setNewRole('');
+      await refreshUser();
       toast.success('Role added');
     }
   };
 
   const handleRemoveRole = async (roleId) => {
-    const res = await authFetch('http://localhost:5000/api/startup/remove-role', {
+    const res = await authFetch('/api/startup/remove-role', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ startupId: user?.startupId._id, roleId }),
+      body: JSON.stringify({ startupId: user?.startupId?._id, roleId }),
     });
     if (res.ok) {
       setTeam(prev => prev.filter(role => role._id !== roleId));
+     refreshUser();
       toast.success('Role removed successfully');
     }
   };
 
   const handleUnassignRole = async (roleId) => {
-    const res = await authFetch('http://localhost:5000/api/startup/unassign-role', {
+    const res = await authFetch('/api/startup/unassign-role', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ startupId: user?.startupId._id, roleId }),
@@ -125,7 +129,7 @@ const StartupManager = () => {
 
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this startup?")) return;
-    const res = await authFetch(`http://localhost:5000/api/startup/${user?.startupId._id}`, {
+    const res = await authFetch(`/api/startup/${user?.startupId._id}`, {
       method: 'DELETE',
     });
     if (res.ok) {
@@ -144,8 +148,8 @@ const StartupManager = () => {
         <div className="flex flex-col md:flex-row items-start gap-4">
           <div className="relative">
             <img
-              src={preview || `http://localhost:5000/api/upload/startup_pics/${form.photo || 'default.jpg'}`}
-              onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/startup_pics/default.jpg'; }}
+              src={preview || `${BASE_URL}/api/upload/startup_pics/${form.photo || 'default.jpg'}`}
+              onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/startup_pics/default.jpg`; }}
               alt="Startup"
               className="w-24 h-24 object-cover rounded-full border border-gray-400"
             />
@@ -238,16 +242,16 @@ const StartupManager = () => {
             <h2 className="text-lg font-semibold text-pink-700 mb-4">Team Roles</h2>
             {team.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {team.map((role) => (
+                {team?.map((role) => (
                   <div key={role._id} className="border border-gray-300 rounded p-3 flex items-center justify-between">
                     <div>
                       <p className="text-gray-700 font-semibold">{role.roleName}</p>
                       <button onClick={() => handleRemoveRole(role._id)} className="text-sm text-red-500 p-1">Remove role</button>
-                      {role.assignedTo ? (
+                      {role?.assignedTo ? (
                         <p className="text-sm text-gray-600">
-                          Assigned to: <span className="font-medium text-blue-600">{role.assignedTo.name} ({role.assignedTo.designation})</span>
+                          Assigned to: <span className="font-medium text-blue-600">{role?.assignedTo?.name} ({role?.assignedTo?.designation})</span>
                           <button><span className="text-xs text-red-500 ml-2 cursor-pointer"
-                            onClick={() => handleUnassignRole(role._id)}>Unassign</span></button>
+                            onClick={() => handleUnassignRole(role?._id)}>Unassign</span></button>
                         </p>
                       ) : (
                         <p className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded inline-block mt-1">
@@ -255,8 +259,8 @@ const StartupManager = () => {
                         </p>
                       )}
                     </div>
-                    {role.assignedTo?.photo && (
-                      <img src={`http://localhost:5000/api/upload/profile_pics/${role.assignedTo.photo}`}
+                    {role?.assignedTo?.photo && (
+                      <img src={`${BASE_URL}/api/upload/profile_pics/${role?.assignedTo?.photo}`}
                         alt="Assigned User" className="w-10 h-10 rounded-full object-cover" />
                     )}
                   </div>

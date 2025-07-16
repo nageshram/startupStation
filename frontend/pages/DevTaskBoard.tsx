@@ -17,7 +17,7 @@ const DevTaskBoard = () => {
       console.log("startup id :",startupId);
       console.log(user);
       if(!user) return;
-      const taskRes = await authFetch(`http://localhost:5000/api/tasks/user/${startupId}`, { 
+      const taskRes = await authFetch(`/api/tasks/user/${startupId}`, { 
       method: 'GET',
        headers:{ 'Content-Type':'application/json'},
       });
@@ -33,7 +33,7 @@ useEffect(() => {
   }, []);
 
   const updateTask = async (id, updates) => {
-    const res = await authFetch(`http://localhost:5000/api/tasks/${id}`, {
+    const res = await authFetch(`/api/tasks/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updates),

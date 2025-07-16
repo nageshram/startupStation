@@ -1,6 +1,7 @@
 import { MapPin, Phone, Mail, Twitter, Linkedin, Github } from "lucide-react";
 import { useState }  from 'react'
 import { toast } from 'react-toastify'
+const BASE_URL = import.meta.env.VITE_API_URL
 
 export const Contact = ()=>{
       const [formData, setFormData] = useState({
@@ -18,7 +19,7 @@ const handleSubmit = async (e)=>
    {
     e.preventDefault();
     try{
-        const res = await fetch("http://localhost:5000/api/contactadmin/message",{
+        const res = await fetch(`${BASE_URL}/api/contactadmin/message`,{
           method:"POST",
           headers:{
             "Content-Type":"application/json",

@@ -11,7 +11,7 @@ const ResignModal = ({ isOpen, onClose, startupId }) => {
     setLoading(true);
 
     try {
-      const response = await authFetch('http://localhost:5000/api/requests/resign', {
+      const response = await authFetch('/api/requests/resign', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ startupId, desc }),

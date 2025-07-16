@@ -16,7 +16,7 @@ const AllStartups = () => {
   useEffect(() => {
     if (user?.designation !== 'Admin') return;
 
-    authFetch('http://localhost:5000/api/startup')
+    authFetch('/api/startup')
       .then(res => res.json())
       .then(data => {
         setStartups(data);
@@ -30,7 +30,7 @@ const AllStartups = () => {
     if (!confirmed) return;
 
     try {
-      const res = await authFetch(`http://localhost:5000/api/startup/${startupId}`, {
+      const res = await authFetch(`/api/startup/${startupId}`, {
         method: 'DELETE',
       });
       if (res.ok) {

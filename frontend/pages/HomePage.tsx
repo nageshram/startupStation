@@ -15,12 +15,12 @@ const HomePage = () => {
   const [drawer, setDrawer] = useState<'profile' | 'messages' | null>(null);
 
   useEffect(() => {
-    authFetch('http://localhost:5000/api/users', { method:"GET" })
+    authFetch('/api/users', { method:"GET" })
       .then((res) => res.json())
       .then(setUser)
       .catch(() => setErrors('Failed to load user'));
 
-    authFetch('http://localhost:5000/api/notifications', { method:"GET" })
+    authFetch('/api/notifications', { method:"GET" })
       .then((res) => res.json())
       .then(setNotifications)
       .catch(() => setErrors('Failed to fetch notifications'));

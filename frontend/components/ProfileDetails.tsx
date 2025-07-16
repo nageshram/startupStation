@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { authFetch } from '../utils/authFetch';
 import {Mail, Phone , Home } from 'lucide-react'
+const BASE_URL = import.meta.env.VITE_API_URL
 
 const ProfileDetails = ({ user, setErrors, setActiveChatUser }) => {
   const [suggestions, setSuggestions] = useState([]);
 
   useEffect(() => {
     if ( user.designation === 'Admin' || !user) return;
-    authFetch(`http://localhost:5000/api/suggestions/${user.designation}`)
+    authFetch(`/api/suggestions/${user.designation}`)
       .then((res) => res.json())
       .then(setSuggestions)
       .catch(() => setErrors('Failed to load suggestions'));
@@ -19,9 +20,9 @@ const ProfileDetails = ({ user, setErrors, setActiveChatUser }) => {
     <div className="bg-white p-4 rounded-lg shadow space-y-4 text-sm md:text-base">
       <div className="flex flex-col items-center">
         <img
-          src={'http://localhost:5000/api/upload/profile_pics/' + user.photo || 'default.jpg'}
+          src={`${BASE_URL}/api/upload/profile_pics/`  + user.photo || 'default.jpg'}
           alt="Profile"
-          onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/profile_pics/default.jpg'; }}
+          onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/profile_pics/default.jpg`; }}
           className="w-24 h-24 rounded-full object-cover border"
         />
         <h2 className="mt-2 font-bold text-gray-700">{user.name}</h2>
@@ -53,7 +54,7 @@ const ProfileDetails = ({ user, setErrors, setActiveChatUser }) => {
             <>
               {suggestions.devs?.map((s, i) => (
                 <div key={`dev-${i}`} className="p-2 border rounded hover:bg-gray-100 flex items-center gap-2">
-                  <img src={s.photo ? 'http://localhost:5000/api/upload/profile_pics/' + s.photo : 'default.jpg'} alt={s.name} className="w-8 h-8 rounded-full object-cover border" />
+                  <img src={s.photo ? '/api/upload/profile_pics/' + s.photo : 'default.jpg'} alt={s.name} className="w-8 h-8 rounded-full object-cover border" />
                   <div className="flex-1">
                     <p className="font-semibold text-gray-700">{s.name}</p>
                     <p className="text-xs text-gray-500">@{s.username} <span className="ml-2">{s.skills?.join(', ')}</span></p>
@@ -68,7 +69,7 @@ const ProfileDetails = ({ user, setErrors, setActiveChatUser }) => {
               ))}
               {suggestions.investors?.map((s, i) => (
                 <div key={`inv-${i}`} className="p-2 border rounded hover:bg-gray-100 flex items-center gap-2">
-                  <img src={s.photo ? 'http://localhost:5000/api/upload/profile_pics/' + s.photo : 'default.jpg'} alt={s.name} className="w-8 h-8 rounded-full object-cover border" />
+                  <img src={s.photo ? `${BASE_URL}/api/upload/profile_pics/` + s.photo : 'default.jpg'} alt={s.name} className="w-8 h-8 rounded-full object-cover border" />
                   <div className="flex-1">
                     <p className="font-semibold text-gray-700">{s.name}</p>
                     <p className="text-xs text-gray-500">@{s.username}</p>
@@ -88,8 +89,8 @@ const ProfileDetails = ({ user, setErrors, setActiveChatUser }) => {
           {(user.designation === 'Dev' || user.designation === 'Investor') && suggestions.startups?.length > 0 ? (
             suggestions.startups.map((s, i) => (
               <div key={`startup-${i}`} className="p-2 border rounded hover:bg-gray-100 flex items-center gap-2">
-                <img src={s.photo ? 'http://localhost:5000/api/upload/startup_pics/' + s.photo : 'default.jpg'}
-                onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/startup_pics/default.jpg'; }}
+                <img src={s.photo ? `${BASE_URL}/api/upload/startup_pics/` + s.photo : 'default.jpg'}
+                onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/startup_pics/default.jpg`; }}
                 alt={s.name} className="w-8 h-8 rounded-full object-cover border" />
                 <div className="flex-1">
                   <p className="font-semibold text-gray-700">{s.name}</p>

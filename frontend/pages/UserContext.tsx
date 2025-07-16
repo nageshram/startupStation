@@ -8,7 +8,7 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   const fetchUser = async ()=>{
-    await authFetch("http://localhost:5000/api/users", { method: "GET" })
+    await authFetch("/api/users", { method: "GET" })
           .then((res) => res.json())
           .then(setUser)
           .catch(() => console.log("Failed to load user"));

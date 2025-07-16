@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+const BASE_URL = import.meta.env.VITE_API_URL
 
 export const FeaturedStartups = () => {
   const [startups, setStartups] = useState([]);
@@ -6,7 +7,7 @@ export const FeaturedStartups = () => {
   useEffect(() => {
     //  fetch request to get startups, adjust it according to your data source
     const fetchStartups = async () => {
-      const res = await fetch('http://localhost:5000/api/startup');
+      const res = await fetch(`${BASE_URL}/api/startup`);
       const data = await res.json();
       setStartups(data); // Assume the data is an array of startups
     };
@@ -38,12 +39,12 @@ export const FeaturedStartups = () => {
                 <img
                   src={
                     startup.photo
-                      ? `http://localhost:5000/api/upload/startup_pics/${startup.photo}`
+                      ? `${BASE_URL}/api/upload/startup_pics/${startup.photo}`
                       : '/default.jpg'
                   }
                   alt={startup.name}
                   className="w-full h-48 object-cover"
-                  onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/startup_pics/default.jpg'; }}
+                  onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/startup_pics/default.jpg`; }}
                 />
                 <div className="p-6">
                   <h3 className="text-xl font-bold text-gray-900 mb-2">

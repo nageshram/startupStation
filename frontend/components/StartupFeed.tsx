@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { authFetch } from '../utils/authFetch';
 import { MessageCircle, MessageSquare } from 'lucide-react'
 import { toast } from 'react-toastify';
+const BASE_URL = import.meta.env.VITE_API_URL
 
 const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
   const [feed, setFeed] = useState([]);
@@ -12,7 +13,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
   const [remarks, setRemarks] = useState({});
 
   useEffect(() => {
-    authFetch('http://localhost:5000/api/startup/', { 
+    authFetch('/api/startup/', { 
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
        })
@@ -25,7 +26,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
   const handleSearch = async (e) => {
     if (e.key === 'Enter') {
       try {
-        const res = await authFetch(`http://localhost:5000/api/search/${searchTerm}`, {
+        const res = await authFetch(`/api/search/${searchTerm}`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }
         });
@@ -49,7 +50,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
     try {
       const body = { receiverId, requestType, startupId,targetRoleId};
       console.log(body);
-      const res = await authFetch('http://localhost:5000/api/requests/founder-req', {
+      const res = await authFetch('/api/requests/founder-req', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
@@ -67,7 +68,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
 
   const sendInvestRequest = async (startupId, desc) => {
     try {
-      const res = await authFetch('http://localhost:5000/api/requests/invest', {
+      const res = await authFetch('/api/requests/invest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ startupId, desc }),
@@ -84,7 +85,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
   const sendJobRequest = async (startupId, desc, targetRoleId) => {
     try {
       const body = { startupId, desc, targetRoleId };
-      const res = await authFetch('http://localhost:5000/api/requests/job', {
+      const res = await authFetch('/api/requests/job', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
@@ -188,9 +189,9 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
       {/* Image + Basic Info */}
       <div className="flex gap-4">
         <img
-          src={startup.photo ? `http://localhost:5000/api/upload/startup_pics/${startup.photo}` : '/default.jpg'}
+          src={startup.photo ? `${BASE_URL}/api/upload/startup_pics/${startup.photo}` : '/default.jpg'}
           className="w-20 h-20 rounded object-cover"
-          onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/startup_pics/default.jpg'; }}
+          onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/startup_pics/default.jpg`; }}
           alt="startup"
         />
         <div className="flex-1">
@@ -302,8 +303,8 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
     {results.founders.map((founder) => (
       <div key={founder._id} className="bg-white rounded shadow p-4 flex items-center gap-4">
         <img
-          src={founder.photo ? 'http://localhost:5000/api/upload/profile_pics/' + founder.photo : '/default.jpg'}
-          onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/profile_pics/default.jpg'; }}
+          src={founder.photo ? `${BASE_URL}/api/upload/profile_pics/` + founder.photo : '/default.jpg'}
+          onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/profile_pics/default.jpg`; }}
           className="w-14 h-14 rounded-full object-cover"
           alt=""
         />
@@ -328,7 +329,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
                 <div key={inv._id} className="bg-white rounded shadow p-4 flex items-center flex-col gap-4">
                   <div className="flex flex-row justify-left items-start gap-2">
                     <div>
-                  <img src={ inv.photo ? 'http://localhost:5000/api/upload/profile_pics/' + inv.photo : '/default.jpg'} onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/profile_pics/default.jpg'; }} className="w-14 h-14 rounded-full object-cover" alt="" />
+                  <img src={ inv.photo ? `${BASE_URL}/api/upload/profile_pics/` + inv.photo : '/default.jpg'} onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/profile_pics/default.jpg`; }} className="w-14 h-14 rounded-full object-cover" alt="" />
                       </div>
                   <div className="flex-1">
                     <div className="font-semibold">{inv.name}  <br /> <span className="text-xs text-gray-500">@{inv.username}</span></div>
@@ -384,7 +385,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
                 <div key={dev._id} className="bg-white rounded shadow p-4 flex flex-col items-center gap-4">
                   <div className="flex flex-row gap-2">
                   <div>
-                  <img src={ dev.photo ? "http://localhost:5000/api/upload/profile_pics/"+dev.photo : '/default.jpg'} onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/profile_pics/default.jpg'; }} className="w-14 h-14 rounded-full object-cover" alt="" />
+                  <img src={ dev.photo ? `${BASE_URL}/api/upload/profile_pics/` +dev.photo : '/default.jpg'} onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/profile_pics/default.jpg`; }} className="w-14 h-14 rounded-full object-cover" alt="" />
                   </div>
                   <div className="flex-1">
                     <div className="font-semibold flex justify justify-between"><span> {dev.name}</span>
@@ -472,7 +473,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
                 {/* Header: Founder Info */}
                 <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 bg-gray-50">
                   <img
-                    src={  'http:/localhost:5000/api/upload/profile_pics/'+ startup.founderId?.photo || "/default.jpg"} onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/profile_pics/default.jpg'; }}
+                    src={  `${BASE_URL}/api/upload/profile_pics/`+ startup.founderId?.photo || "/default.jpg"} onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/profile_pics/default.jpg`; }}
                     alt="Founder"
                     className="w-10 h-10 rounded-full object-cover border"
                   />
@@ -488,8 +489,8 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
                 {/* Startup Image */}
                 <div className="w-full h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
                   <img
-                    src={startup.photo ? 'http://localhost:5000/api/upload/startup_pics/' + startup.photo : '/default.jpg'}
-                    onError={e => { e.target.onerror = null; e.target.src = 'http://localhost:5000/api/upload/profile_pics/default.jpg'; }}
+                    src={startup.photo ? `${BASE_URL}/api/upload/startup_pics/` + startup.photo : '/default.jpg'}
+                    onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/profile_pics/default.jpg`; }}
                     className="object-cover w-full h-full"
                     alt="startup"
                   />

@@ -15,7 +15,7 @@ const Dashboard = () => {
 
   useEffect(() => {
    
-    authFetch("http://localhost:5000/api/notifications", { method: "GET" })
+    authFetch("/api/notifications", { method: "GET" })
       .then((res) => res.json())
       .then(setNotifications)
       .catch(() => setErrors("Failed to fetch notifications"));
