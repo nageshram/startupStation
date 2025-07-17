@@ -116,7 +116,7 @@ export const logout = async (req, res) => {
     secure:true,
     sameSite:'none'});
 
-   res.clearCookie('refreshToken', refreshToken,{
+   res.clearCookie('refreshToken', req.cookies.refreshToken,{
     httpOnly:true,
     secure:true,
     sameSite:'none'
@@ -191,7 +191,7 @@ export const resetPasswordWithOtp = async (req, res) => {
 
 export const loginStatus = async (req, res) => {
   // If auth middleware passes, user is logged in
-  if(req.user.id) res.json({ loggedIn: true, user: req.user });
-  res.json({ loggedIn: false, user: req.user });
+  //if(req.user.id) res.json({ loggedIn: true, user: req.user });
+  res.json({ loggedIn: true, user: req.user });
 };
 
