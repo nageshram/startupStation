@@ -12,7 +12,7 @@ const HomePage = () => {
   const [errors, setErrors] = useState('');
   const [activeChatUser, setActiveChatUser] = useState(null);
   const [notifications, setNotifications] = useState([]);
-  const [drawer, setDrawer] = useState<'profile' | 'messages' | null>(null);
+  const [drawer, setDrawer] = useState(null);
 
   useEffect(() => {
     authFetch('/api/users', { method:"GET" })

@@ -111,12 +111,12 @@ export const logout = async (req, res) => {
     user.refreshToken = null;
     await user.save();
 
-    res.clearCookie('accessToken', req.cookies.accessToken, {
+    res.clearCookie('accessToken', {
     httpOnly:true,
     secure:true,
     sameSite:'none'});
 
-   res.clearCookie('refreshToken', req.cookies.refreshToken,{
+   res.clearCookie('refreshToken',{
     httpOnly:true,
     secure:true,
     sameSite:'none'

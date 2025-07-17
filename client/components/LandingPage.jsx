@@ -3,6 +3,7 @@ import { Star } from "lucide-react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { Link } from 'react-router-dom';
+const BASE_URL = import.meta.env.VITE_API_URL
 
 export const LandingPage = () => {
   return (
@@ -35,7 +36,7 @@ export const LandingPage = () => {
               </div>
               <div className="relative">
                 <div className="relative z-10 rounded-3xl p-8 transform rotate-3 hover:rotate-0 transition-transform duration-500">
-                  <img src="../src/assets/6304080.jpg" className="flex w-full h-auto filter bg-violet-300 rounded-2xl items-center" alt="graphics people building startups" />
+                  <img src= {`${BASE_URL}/api/upload/startup_pics/6304080.jpg`} className="flex w-full h-auto filter bg-violet-300 rounded-2xl items-center" alt="graphics people building startups" />
                 </div>
                 <div className="absolute -top-6 -right-6 w-32 h-32 bg-primary-100 rounded-full opacity-50 animate-pulse"></div>
                 <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-purple-100 rounded-full opacity-40 animate-pulse delay-1000"></div>

@@ -12,7 +12,7 @@ export const ForgotPassword = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [timer, setTimer] = useState(600); // 10 minutes
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef(null);
   const navigate = useNavigate();
 
   const passwordRef = useRef(null)

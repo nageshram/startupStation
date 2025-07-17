@@ -58,7 +58,7 @@ export const LoginPage = ()=>
             <div className="flex py-25 md:p-12 justify-center flex-col items-center "  >
                     
 
-                     <p className="  p-1 md:p-2 flex justify-around gap-1 text-pink-800  text-3xl  font-extrabold"> <Framer />  Startup stn. </p>
+                     <p className="  p-1 md:p-2 flex justify-around gap-1 text-pink-800  text-3xl  font-extrabold"> <Framer />  <Link to="/" >Startup Stn.</Link> </p>
                   <h3 className=" text-gray-700 p-2 md:p-2  text-[20px] md:text-2xl ">Welcome to startup world</h3>
                     {error && <p className="text-red-400 mb-1 pt-3 text-center items-center font-semibold"> {error} </p> }
                     <div className="bg-white border  text-gray-800 border-blue-300 py-5 shadow-gray-700 px-4 md:px-12 pb-8  mt-10 h-auto rounded-2xl ">

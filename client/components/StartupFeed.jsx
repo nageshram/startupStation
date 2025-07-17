@@ -513,7 +513,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
                     setSelectedRoles({ ...selectedRoles, [idx]: e.target.value })
                   }
                 >
-                  <option value="" className='text-gray-300'>Select Role</option>
+                  <option value=""   className='text-gray-300'>Select Role</option>
                   {startup.teamId?.roles?.map((role, idx) => (
                      <> { (role.assignedTo === null && role.assignedTo !== undefined ) && (
                               <option key={role._id} value={role._id}>
