@@ -24,13 +24,13 @@ export const signup = async (req, res) => {
     
     res.cookie('accessToken', accessToken, {
     httpOnly:true,
-    secure:false,
-    sameSite:'lax',
-    maxAge:15*60*1000
+    secure:true,
+    sameSite:'none',
+    maxAge:60*60*1000
   }).cookie('refreshToken', refreshToken,{
     httpOnly:true,
-    secure:false,
-    sameSite:'lax',
+    secure:true,
+    sameSite:'none',
     maxAge:7*24*60*60*1000
   }).status(200).json({"message":"Signup Successfull!"});
 
@@ -57,13 +57,13 @@ export const login = async (req, res) => {
 
   res.cookie('accessToken', accessToken, {
     httpOnly:true,
-    secure:false,
-    sameSite:'lax',
-    maxAge:15*60*1000
+    secure:true,
+    sameSite: 'none',
+    maxAge:60*60*1000
   }).cookie('refreshToken', refreshToken,{
     httpOnly:true,
-    secure:false,
-    sameSite:'lax',
+    secure:true,
+    sameSite: 'none',
     maxAge:7*24*60*60*1000
   }).status(200).json({"message":"Login Successful"});
 };
@@ -88,13 +88,13 @@ export const refreshToken = async (req, res) => {
    
   res.cookie('accessToken', newAccessToken, {
     httpOnly:true,
-    secure:false,
-    sameSite:'lax',// change it Strict after deployment over HTTPS
-    maxAge:15*60*1000
+    secure:true,
+    sameSite: 'none',// change it Strict after deployment over HTTPS
+    maxAge:60*60*1000
   }).cookie('refreshToken', newRefreshToken,{
     httpOnly:true,
-    secure:false,
-    sameSite:'lax',
+    secure:true,
+    sameSite: 'none',
     maxAge:7*24*60*60*1000
   })
   .json({"message":"Refresh Token Renewed"});
@@ -113,13 +113,13 @@ export const logout = async (req, res) => {
 
     res.clearCookie('accessToken', req.cookies.accessToken, {
     httpOnly:true,
-    secure:false,
-    sameSite:'lax'});
+    secure:true,
+    sameSite: 'none'});
 
    res.clearCookie('refreshToken', refreshToken,{
     httpOnly:true,
-    secure:false,
-    sameSite:'lax'
+    secure:true,
+    sameSite: 'none'
   });
      res.status(200).json({ message: 'Logged out successfully' });
   }
