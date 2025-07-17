@@ -35,10 +35,10 @@ const ProfileDetails = ({ user, setErrors, setActiveChatUser }) => {
         <p className="text-gray-600 flex justify-left gap-1 items-center text-md "><Phone className="text-gray-800 w-4 h-4" /> {user.phno}</p>
         <p className="text-gray-600 flex justify-left gap-1 text-md items-center"><Home className="text-gray-800 w-4 h-4" />{user.address}</p>
     
-        {user.designation === 'Dev' && (
+        {user?.designation === 'Dev' && (
           <>
-            <p className="text-gray-600"> {user.dev.desc}</p>
-            <p className="text-gray-600">Skills : {user.dev.skills?.join(', ')}</p>
+            <p className="text-gray-600"> {user?.dev?.desc}</p>
+            <p className="text-gray-600">Skills : {user?.dev?.skills?.join(', ')}</p>
           </>
         )}
       </div>

@@ -1,259 +1,198 @@
 import { Framer } from "lucide-react";
-import type { FormEvent, ChangeEvent } from "react";
+import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {useState, useRef } from 'react'
-import { toast } from 'react-toastify'
-const BASE_URL = import.meta.env.VITE_API_URL
+import { toast } from "react-toastify";
 
-export const SignupPage =() =>
-{
-   const [error,setError]=useState("");
-   const navigate = useNavigate();
-   
-   const [available, setAvailable ] = useState("");
-   const [Emailavailable, setEmailAvailable] = useState("");
-   const[usernameError, setUserNameError] = useState("");
-   const [passwordError, setPasswordError] = useState("");
-   const usernameRef = useRef(null);
-   const errorusernameRef = useRef(null);
-   const passwordRef = useRef(null);
-   const emailRef = useRef(null);
-   const errorEmailRef= useRef(null);
-   const [formData, setFormData] = useState({
-    name:"",
-    username:"",
-    email:"",
-    password:"",
-    phno:"",
-    aadhar:"",
-    designation:"",
-    address:""
-   })
-      
-    const handleSubmit = async (e)=> {
-        e.preventDefault();
-        
+const BASE_URL = import.meta.env.VITE_API_URL;
 
-        if( available != "available" && Emailavailable!="available")
-        {   
-            toast.info("All fields are necessary");
-            return;
-        }
-        if(emailRef.current.value=='' || usernameRef.current.value=='' )
-        {
-             toast.info("All fields are necessary");
-            return;
-        }
+export const SignupPage = () => {
+  const navigate = useNavigate();
 
-         const res = await fetch("`${BASE_URL}/api/auth/signup",{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify(formData),
-         });
+  const [formData, setFormData] = useState({
+    name: "",
+    username: "",
+    email: "",
+    password: "",
+    phno: "",
+    aadhar: "",
+    designation: "",
+    address: "",
+  });
 
-         const resp= JSON.stringify(res)
+  const [errors, setErrors] = useState({});
+  const [usernameStatus, setUsernameStatus] = useState("");
+  const [emailStatus, setEmailStatus] = useState("");
 
-         if(res.status==400)
-         {
-            
-            setError("Signup failed!.");
-         }
-         else if(!res.ok)
-         {
-            setError("Something went wrong please try again later!..");
-         }
-        else{
-             if (res.status == 200 || res.ok)
-            {
-                 navigate('/home');
-                 console.log("Signup Successfull");
-            }
-        }
+  const usernameRef = useRef(null);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+
+  const validate = () => {
+    const newErrors = {};
+
+    if (!/^[a-z0-9._]+$/.test(formData.username)) {
+      newErrors.username = "Username must contain only lowercase letters, numbers, dots, or underscores.";
     }
 
-    const handleEmailCheck = async(e) => {
-        
-       const email = emailRef.current.value.trim();
-        
-       const regex= /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-       if(!regex.test(email))
-       {
-        setEmailAvailable("Enter a valid email")
-        return
-       }
-        
-        e.preventDefault();
-         const res = await fetch(`${BASE_URL}/api/users/check-email`,{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({"email":email})
-         });
-
-         const resp= await res.json();
-    
-         if(res.status==200 && resp.available)
-          {     
-               errorEmailRef.current.classList.add('text-green-600')
-                setEmailAvailable("available")
-                emailRef.current.classList.add('border-green-600');
-                errorEmailRef.current.classList.remove('text-red-600')
-                emailRef.current.classList.remove('border-red-600')
-                handleChange(e);
-            }
-            else{ 
-                errorEmailRef.current.classList.add('text-red-600')
-                setEmailAvailable("already exists");
-                emailRef.current.classList.remove('border-green-600');
-                emailRef.current.classList.add('border-red-600')
-                errorEmailRef.current.classList.remove('text-green-600')
-                
-            }
-         
-         
-        }
-
-
-    const handleChange= (e)=> {
-        setFormData({...formData,[e.target.name]:e.target.value});
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Enter a valid email.";
     }
 
-    const handleUsernameCheck = async(e) => {
-        
-       const username = usernameRef.current.value.trim();
-
-        const pattern=/^[a-z0-9._]+$/;
-     
-        if(!pattern.test(username))
-        {
-             setUserNameError("Username must contain lowercase letters, numbers, dots (.) and underscore( _ )");
-             return;
-        }
-        setUserNameError("");
-        e.preventDefault();
-         const res = await fetch(`${BASE_URL}/api/users/check-username`,{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({"username":username})
-         });
-
-         const resp= await res.json();
-    
-         if(res.status==200 && resp.available)
-          {
-                setAvailable("available")
-                usernameRef.current.classList.add('border-green-600');
-                errorusernameRef.current.classList.add('text-green-600');
-                errorusernameRef.current.classList.remove('text-red-600')
-                usernameRef.current.classList.remove('border-red-600')
-                handleChange(e);
-            }
-            else{ 
-                setAvailable("already exists");
-                usernameRef.current.classList.remove('border-green-600');
-                usernameRef.current.classList.add('border-red-600')
-                errorusernameRef.current.classList.add('text-red-600')
-                errorusernameRef.current.classList.remove('text-green-600')
-                formData.username='';
-            }
-         
-         
-        }
-
-     const handlePassword = (e)=>
-     {
-        const pass = passwordRef.current.value.trim();    
-        const pattern=/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/
-        const title="Password Must contain at least one number and one uppercase and lowercase letter and at least 8 or more characters"
-        
-        if(!pattern.test(pass))
-        { // usernameRef.current.classList.remove('border','outline-green-200');
-            setPasswordError(title);
-        }
-        else{
-            setPasswordError("");
-            handleChange(e);
-           // passwordRef.current.classList.add('border-1','outline','outline-green-400','border-green-400');
-        }
-
+    if (!/^\d{10}$/.test(formData.phno)) {
+      newErrors.phno = "Phone number must be 10 digits.";
     }
-    
 
-    return(
+    if (!/^\d{12}$/.test(formData.aadhar)) {
+      newErrors.aadhar = "Aadhar must be 12 digits.";
+    }
 
-    <section  className="login  w-full h-full md:h-screen md:m-1 rounded-xl  font-sans  " >
-           
-                     
-            <div className="flex py-20  md:p-10 justify-center flex-col items-center "  >
-                    
+    if (!/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/.test(formData.password)) {
+      newErrors.password =
+        "Password must contain at least 1 number, 1 uppercase, 1 lowercase letter and be at least 8 characters.";
+    }
 
-                <p className="p-1  md:p-2 flex justify-around gap-1 text-pink-800  text-3xl  font-extrabold max-sm:bg-sky-100 max-sm:rounded-2xl max-sm:p-5"> <Framer />  Startup stn. </p>
-                  <h3 className=" text-gray-700 p-2 md:p-2  text-[20px] md:text-2xl ">Signup to build your dream </h3>
-                    {usernameError && <p className="absolute top-32 text-red-500 mb-1 pt-3 text-center items-center font-semibold"> {usernameError} </p> }
-                    {passwordError && <p className="absolute top-36 text-red-500 mb-1 pt-3 text-center items-center font-semibold">{passwordError}</p>  }
-                    
-                    <div className="bg-white border mx-9 md:mx-5  text-sm md:text-md  text-gray-800 border-blue-300 py-5 shadow-gray-700 px-4 md:px-12 pb-8  mt-10 h-auto rounded-2xl ">
-                  
-                                <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-4  *:placeholder:max-sm:text-[12px]">
-                        <label> Name
-                            <input type="text" name="name" placeholder="name" onChange={handleChange} required className="p-1 md:p-2 my-2 md:my-1 w-full border border-gray-500 rounded  focus:border-pink-500 focus:outline focus:outline-pink-500 " />
-                        </label>
+    if (!formData.designation) {
+      newErrors.designation = "Select a role.";
+    }
 
-                        <label> Username  {  available && <p ref={errorusernameRef} className="ml-1 text-sm absolute inline-block">{ available }</p>}
-                            <input type="text" ref={usernameRef} name="username"    placeholder="Enter unique username" onChange={handleUsernameCheck} required className="p-1 md:p-2 my-2 md:my-1 w-full border border-gray-500 rounded invalid:border-1    focus:border-pink-500 focus:outline focus:outline-pink-500" />
-                            {/*usernameError && <p className="text-red-500 text-sm ">{usernameError}</p> */ }
-                        </label>
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-                        <label> Email {  Emailavailable && <p ref={errorEmailRef} className="ml-1 text-sm absolute inline-block">{Emailavailable}</p>}
-                            <input type="email" name="email" ref={emailRef} placeholder="user@example.com" onChange={handleEmailCheck} required className="p-1  md:p-2 my-2 md:my-1 w-full border border-gray-500 rounded invalid:border-1    focus:border-pink-500 focus:outline focus:outline-pink-500" />
-                        </label>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-                        <label> Phone
-                            <input type="text" placeholder="123 456 78 90" name="phno" onChange={handleChange} required className=" p-1  md:p-2 my-2 md:my-1 w-full border border-gray-500 rounded invalid:border-1    focus:border-pink-500 focus:outline focus:outline-pink-500" />
-                        </label>
+    if (!validate()) {
+      toast.error("Please fix form errors.");
+      return;
+    }
 
-                        <label> Password
-                            <input type="password" ref={passwordRef} name="password"  placeholder="Password"  onChange={handlePassword} required className="md:p-2 p-1 my-2 md:my-1 w-full border border-gray-500 rounded   focus:border-pink-500 focus:outline focus:outline-pink-500" />
-                        </label>
+    try {
+      const res = await fetch(`${BASE_URL}/api/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-                        <label> Address
-                            <input type="text" name="address"placeholder="Sectore A Avalahalli" onChange={handleChange} required className=" p-1  md:p-2 my-2 md:my-1 w-full border border-gray-500 rounded invalid:border-1    focus:border-pink-500 focus:outline focus:outline-pink-500" />
-                        </label>
+      if (res.status === 409) {
+        toast.error("Username or email already exists.");
+      } else if (!res.ok) {
+        toast.error("Signup failed. Try again.");
+      } else {
+        toast.success("Signup successful!");
+        navigate("/home");
+      }
+    } catch (error) {
+      toast.error("Server error.");
+    }
+  };
 
-                        <label> Aadhar Number
-                            <input type="text" name="aadhar" placeholder=" 1234 4568 896" onChange={handleChange} required className=" p-1 md:p-2 my-2 md:my-1 w-full border border-gray-500 rounded invalid:border-1    focus:border-pink-500 focus:outline focus:outline-pink-500" />
-                        </label>
+  const checkUsername = async () => {
+    const username = formData.username.trim();
+    if (!username) return;
+    const res = await fetch(`${BASE_URL}/api/users/check-username`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username }),
+    });
+    const data = await res.json();
+    setUsernameStatus(data.available ? "Available ✅" : "Already taken ❌");
+  };
 
-                        <label> Designation
-                            <select name="designation" onChange={handleChange} required className=" p-1 md:p-2 my-2 md:my-1 w-full border border-gray-500  outine-gray-500 rounded invalid:border-1    focus:border-pink-500 focus:outline focus:outline-pink-500">
-                            <option value="">Select your role</option>
-                            <option value="Dev">Developer/Others</option>
-                            <option value="Founder">Founder</option>
-                            <option value="Investor">Investor</option>
-                            </select>
-                        </label>
+  const checkEmail = async () => {
+    const email = formData.email.trim();
+    if (!email) return;
+    const res = await fetch(`${BASE_URL}/api/users/check-email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    setEmailStatus(data.available ? "Available ✅" : "Already exists ❌");
+  };
 
-                        <div className="col-span-full">
-                            <button type="submit" className="p-1  text-amber-50 font-bold bg-pink-600 hover:bg-pink-700   md:p-2 my-2 md:my-1 w-full border border-gray-500 rounded invalid:border-1  focus:border-pink-500 focus:outline focus:outline-pink-500">Sign Up</button>
-                        </div>
-                        </form>
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" });
+  };
 
+  return (
+    <section className="w-full min-h-screen flex justify-center items-center py-12 px-4 bg-gray-50">
+      <div className="w-full max-w-3xl bg-white p-6 rounded-lg shadow-md">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-pink-600 flex items-center justify-center gap-2 mb-2">
+            <Framer /> Startup Stn.
+          </h1>
+          <p className="text-gray-600 mb-6">Signup to build your dream</p>
+        </div>
 
-                         <div className=" space-between justify-between text-gray-700 text-[14px] font-medium p-1" >
-                                 
-                            <p> Already Have account? <Link to="/login" className="text-blue-700"  >Login</Link>  </p> 
-                        </div>
-                  
-                    </div>
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            { label: "Name", name: "name", type: "text" },
+            { label: "Username", name: "username", type: "text", note: usernameStatus, onBlur: checkUsername },
+            { label: "Email", name: "email", type: "email", note: emailStatus, onBlur: checkEmail },
+            { label: "Phone", name: "phno", type: "text" },
+            { label: "Password", name: "password", type: "password", ref: passwordRef },
+            { label: "Address", name: "address", type: "text" },
+            { label: "Aadhar", name: "aadhar", type: "text" },
+          ].map(({ label, name, type, note, onBlur, ref }) => (
+            <div key={name}>
+              <label className="block font-medium text-gray-700">
+                {label}
+                <input
+                  type={type}
+                  name={name}
+                  ref={ref}
+                  value={formData[name]}
+                  onChange={handleChange}
+                  onBlur={onBlur}
+                  className={`mt-1 block w-full px-3 py-2 border rounded-md ${
+                    errors[name] ? "border-red-500" : "border-gray-300"
+                  } focus:outline-none focus:ring-pink-500 focus:border-pink-500`}
+                />
+                {note && <p className="text-sm text-gray-600 mt-1">{note}</p>}
+                {errors[name] && <p className="text-sm text-red-500">{errors[name]}</p>}
+              </label>
             </div>
-                    
-        </section>
- 
+          ))}
 
+          <div>
+            <label className="block font-medium text-gray-700">
+              Designation
+              <select
+                name="designation"
+                value={formData.designation}
+                onChange={handleChange}
+                className={`mt-1 block w-full px-3 py-2 border rounded-md ${
+                  errors.designation ? "border-red-500" : "border-gray-300"
+                } focus:outline-none focus:ring-pink-500 focus:border-pink-500`}
+              >
+                <option value="">Select a role</option>
+                <option value="Dev">Developer/Others</option>
+                <option value="Founder">Founder</option>
+                <option value="Investor">Investor</option>
+              </select>
+              {errors.designation && <p className="text-sm text-red-500">{errors.designation}</p>}
+            </label>
+          </div>
 
+          <div className="col-span-full">
+            <button
+              type="submit"
+              className="w-full bg-pink-600 hover:bg-pink-700 text-white py-2 px-4 rounded-md transition duration-200"
+            >
+              Sign Up
+            </button>
+          </div>
+        </form>
 
-
-
-
-          
-    )
-}
+        <p className="mt-4 text-center text-sm text-gray-700">
+          Already have an account?{" "}
+          <Link to="/login" className="text-blue-600 hover:underline">
+            Login
+          </Link>
+        </p>
+      </div>
+    </section>
+  );
+};
