@@ -191,6 +191,7 @@ export const resetPasswordWithOtp = async (req, res) => {
 
 export const loginStatus = async (req, res) => {
   // If auth middleware passes, user is logged in
-  res.json({ loggedIn: true, user: req.user });
+  if(req.user.id) res.json({ loggedIn: true, user: req.user });
+  res.json({ loggedIn: false, user: req.user });
 };
 
