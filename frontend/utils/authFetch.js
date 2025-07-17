@@ -14,10 +14,11 @@ export async function authFetch(url, options = {}) {
       refreshPromise = await fetch(`${BASE_URL}/api/auth/refresh-token`, {
         method: 'POST',
         credentials: 'include',
-      }).then(r => {
+      })
+      .then(r => {
         isRefreshing = false;
         return r.ok;
-      });
+      }).catch( ()=> { return; });
     }
     const refreshed = await refreshPromise;
     if (refreshed) {

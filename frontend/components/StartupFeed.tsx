@@ -4,7 +4,7 @@ import { MessageCircle, MessageSquare } from 'lucide-react'
 import { toast } from 'react-toastify';
 const BASE_URL = import.meta.env.VITE_API_URL
 
-const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
+const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
   const [feed, setFeed] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState(null); // null means no search, object means search active
@@ -21,6 +21,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
       .then(setFeed)
       .catch(() => setErrors('Failed to load feed'));
   }, []);
+  if(!user) return;
 
   // Handle search
   const handleSearch = async (e) => {
@@ -34,10 +35,10 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
         setResults(data);
 
         // Set first non-empty tab as active
-        if (data.startups && data.startups.length > 0) setActiveTab('startups');
-        else if (data.devs && data.devs.length > 0) setActiveTab('devs');
-        else if (data.Investors && data.Investors.length > 0) setActiveTab('Investors');
-        else if (data.founders && data.founders.length > 0) setActiveTab('founders');
+        if (data?.startups && data?.startups.length > 0) setActiveTab('startups');
+        else if (data?.devs && data?.devs.length > 0) setActiveTab('devs');
+        else if (data?.Investors && data?.Investors.length > 0) setActiveTab('Investors');
+        else if (data?.founders && data?.founders.length > 0) setActiveTab('founders');
         else setActiveTab('');
       } catch (err) {
         setErrors('Search failed');
@@ -91,7 +92,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
         body: JSON.stringify(body),
       });
       const fullResponse = await res.json();
-      if ( res.status == 400 ) { toast.error(fullResponse.msg); console.log(fullResponse.msg); return;}
+      if ( res.status == 400 ) { toast.error(fullResponse?.msg); console.log(fullResponse?.msg); return;}
       setRemarks({ ...remarks, [startupId]: '' }); // Clear remarks after sending
       toast.success('Job request sent!');
     } catch {
@@ -115,7 +116,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
           <input
             type="text"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => setSearchTerm(e?.target?.value)}
             onKeyDown={handleSearch}
             className="w-full border  border-gray-300 rounded p-2 focus:outline-pink-500"
             placeholder="Search for devs, startups, Investors..."
@@ -133,28 +134,28 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, responseMsg }) => {
         {/* Tabs for search results */}
         {results && (
           <div className="flex gap-2 mt-2">
-            {results.startups?.length > 0 && (
+            {results?.startups?.length > 0 && (
               <button
                 className={`px-3 py-1 rounded ${activeTab === 'startups' ? 'bg-pink-600 text-white' : 'bg-gray-100'}`}
                 onClick={() => setActiveTab('startups')}
               >
-                Startups ({results.startups.length})
+                Startups ({results?.startups.length})
               </button>
             )}
-            {results.devs?.length > 0 && (
+            {results?.devs?.length > 0 && (
               <button
                 className={`px-3 py-1 rounded ${activeTab === 'devs' ? 'bg-pink-600 text-white' : 'bg-gray-100'}`}
                 onClick={() => setActiveTab('devs')}
               >
-                Devs ({results.devs.length})
+                Devs ({results?.devs.length})
               </button>
             )}
-            {results.investors?.length > 0 && (
+            {results?.investors?.length > 0 && (
               <button
                 className={`px-3 py-1 rounded ${activeTab === 'investors' ? 'bg-pink-600 text-white' : 'bg-gray-100'}`}
                 onClick={() => setActiveTab('investors')}
               >
-                Investors ({results.investors.length})
+                Investors ({results?.investors.length})
               </button>
             )}
 

@@ -12,9 +12,11 @@ const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user } = useUser();
   const location = useLocation();
+  
 
-  useEffect(() => {
    
+  useEffect(() => {
+   if(!user) return;
     authFetch("/api/notifications", { method: "GET" })
       .then((res) => res.json())
       .then(setNotifications)
@@ -23,6 +25,7 @@ const Dashboard = () => {
   
   
   useEffect(() => {
+    
     if (user?._id) {
       notificationSocket.emit("join-user", user._id);
 

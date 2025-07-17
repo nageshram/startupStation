@@ -25,9 +25,10 @@ const Navbar = ({ user, notifications = [], setErrors, setNotifications, toggleS
 
   const handleLogout = async () => {
     try {
-      await authFetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
-      document.location.reload();
+      await fetch(`${BASE_URL}/api/auth/logout`, { method: 'POST', credentials: 'include' });
+      
       navigate('/login');
+      document.location.reload();
     } catch (err) {
       setErrors('Logout failed');
     }

@@ -16,7 +16,7 @@ const Navbar = () => {
   };
 
   const handleClickOutside = (e) => {
-    if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target)) {
+    if (mobileMenuRef.current && !mobileMenuRef.current.contains(e?.target)) {
       closeMenu();
     }
   };

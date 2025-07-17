@@ -1,4 +1,4 @@
-import { authFetch } from '../utils/authFetch.js'
+import { authFetch } from '../utils/authFetch'
 import { createContext, useContext, useEffect, useState } from 'react';
 //import { toast } from 'react-toastify'
 
@@ -16,12 +16,9 @@ export const UserProvider = ({ children }) => {
 
   useEffect(()=>{
       fetchUser();
+      
   },[]);
 
-  const refresh = ()=>
-    {
-        fetchUser();
-    }
 
   return (
     <UserContext.Provider value={{ user, setUser, refreshUser:fetchUser }}>
