@@ -27,6 +27,9 @@ const DevTaskBoard = () => {
     }
 
 useEffect(() => {
+  if(user.designation!== 'Dev') {
+    return <div className="p-4 text-red-600">Access Denied</div>;
+  }
     if(user?.dev?.teamId?.startupId?._id)
     getTasks();
   console.log(user)
@@ -43,8 +46,8 @@ useEffect(() => {
   };
 
   const getStatusColor = (status) => {
-    if (status === 'pending') return 'bg-yellow-100 text-yellow-800';
-    if (status === 'in-progress') return 'bg-blue-100 text-blue-800';
+    if (status === 'pending') return 'bg-yellow-100 text-gray-800';
+    if (status === 'in-progress') return 'bg-blue-100 text-gray-800';
     return 'bg-green-100 text-green-800';
   };
 
@@ -83,12 +86,13 @@ useEffect(() => {
                     className="w-full mt-2 p-1 text-sm border border-gray-300 rounded"
                     placeholder="Add remarks..."
                     value={task.remarks || ''}
-                    onChange={(e) => updateTask(task._id, { ...task, remarks: e.target.value })}
+                    onChange={(e) =>   setTimeout(() => updateTask(task._id, { ...task, remarks: e.target.value }),2000)}
                   />
                   <select name='status' className="w-full mt-2 p-1 text-sm border border-gray-300 rounded"
                   onChange={(e) => updateTask(task._id, { ...task, status: e.target.value })}
                   >
-                    <option disabled>update status</option>
+                    
+                    <option disabled selected>update-status</option>
                     <option value="in-progress" >In-progress</option>
                     <option value="completed">Completed</option>
                     <option value="pending">Pending</option>

@@ -293,7 +293,7 @@ export const confirmInvestProposal = async (req, res) => {
     user: startup1.founderId,
     type: 'update',
     title: 'Invest proposal accepted',
-    message: `${req.user.name} has accepted your invest proposal for ${role}. now he is part of your startup`,
+    message: `${req.user.name} has accepted your invest proposal.`,
     data: { requestId: request._id }
   });
   sendNotification(startup1.founderId, notification);

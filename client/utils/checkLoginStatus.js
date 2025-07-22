@@ -9,7 +9,7 @@ export async function checkLoginStatus() {
       }); */
   let res = await fetch(`${BASE_URL}/api/auth/login-status`, { method: 'GET', credentials:"include"});
   if (res.ok) {
-    const data = await res.json();
+    const data = await res.json(); 
     return data.loggedIn;
   }
   return false;

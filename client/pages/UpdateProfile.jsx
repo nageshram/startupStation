@@ -132,7 +132,7 @@ const UpdateProfile = () => {
   if (!form.username) return <div className="p-8 text-center">Loading...</div>;
 
   return (
-    <div className="w-full h-screen bg-white rounded-lg shadow-md p-6 mt-4 md:mt-6 mx-auto max-w-6xl">
+    <div className="w-full h-full bg-white rounded-lg shadow-md p-6 mt-4 md:mt-6 mx-auto max-w-6xl">
       {error && (
         <div className="mb-4 text-red-600 bg-red-100 border border-red-300 rounded p-2 text-center">
           {error}

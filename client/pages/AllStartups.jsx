@@ -14,7 +14,9 @@ const AllStartups = () => {
   const { user } = useUser();
 
   useEffect(() => {
-    if (user?.designation !== 'Admin') return;
+    if(user.designation!== 'Admin') {
+    return <div className="p-4 text-red-600">Access Denied</div>;
+  }
 
     authFetch('/api/startup')
       .then(res => res.json())

@@ -9,6 +9,9 @@ const FounderAnalytics = () => {
   const { user } = useUser();
 
   useEffect(() => {
+    if(user.designation!== 'Founder') {
+    return <div className="p-4 text-red-600">Access Denied</div>;
+  }
     if (user?.startupId?._id) {
       authFetch(`/api/analytics/startup/${user?.startupId?._id}`)
         .then(res => res.json())

@@ -72,7 +72,7 @@ const Navbar = ({ user, notifications = [], setErrors, setNotifications, toggleS
   return (
     <header className="flex justify-between items-center px-4 py-2 bg-white shadow-md z-20 relative top-0 left-0 right-0">
      
-     
+     { currentPath === '/dashboard' && (
        <button
         onClick={toggleSidebar}
         className="sm:hidden text-gray-700 focus:outline-none"
@@ -92,9 +92,10 @@ const Navbar = ({ user, notifications = [], setErrors, setNotifications, toggleS
           />
         </svg>
       </button>
+     )}
      
       <div
-        className="text-pink-700 md:font-extrabold font-bold  md:text-xl cursor-pointer"
+        className="text-pink-700 md:font-extrabold font-bold  text-xl cursor-pointer"
         onClick={() => navigate('/')}
       >
         Startup Stn.

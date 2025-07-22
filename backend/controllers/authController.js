@@ -25,12 +25,12 @@ export const signup = async (req, res) => {
     res.cookie('accessToken', accessToken, {
     httpOnly:true,
     secure:true,
-    sameSite:'none',
+    sameSite:'None',
     maxAge:60*60*1000
   }).cookie('refreshToken', refreshToken,{
     httpOnly:true,
     secure:true,
-    sameSite:'none',
+    sameSite:'None',
     maxAge:7*24*60*60*1000
   }).status(200).json({"message":"Signup Successfull!"});
 
@@ -58,12 +58,12 @@ export const login = async (req, res) => {
   res.cookie('accessToken', accessToken, {
     httpOnly:true,
     secure:true,
-    sameSite:'none',
+    sameSite:'None',
     maxAge:60*60*1000
   }).cookie('refreshToken', refreshToken,{
     httpOnly:true,
     secure:true,
-    sameSite:'none',
+    sameSite:'None',
     maxAge:7*24*60*60*1000
   }).status(200).json({"message":"Login Successful"});
 };
@@ -89,12 +89,12 @@ export const refreshToken = async (req, res) => {
   res.cookie('accessToken', newAccessToken, {
     httpOnly:true,
     secure:true,
-    sameSite:'none',// change it Strict after deployment over HTTPS
+    sameSite:'None',// change it Strict after deployment over HTTPS
     maxAge:60*60*1000
   }).cookie('refreshToken', newRefreshToken,{
     httpOnly:true,
     secure:true,
-    sameSite:'none',
+    sameSite:'None',
     maxAge:7*24*60*60*1000
   })
   .json({"message":"Refresh Token Renewed"});
@@ -114,12 +114,12 @@ export const logout = async (req, res) => {
     res.clearCookie('accessToken', {
     httpOnly:true,
     secure:true,
-    sameSite:'none'});
+    sameSite:'None'});
 
    res.clearCookie('refreshToken',{
     httpOnly:true,
     secure:true,
-    sameSite:'none'
+    sameSite:'None'
   });
      res.status(200).json({ message: 'Logged out successfully' });
   }

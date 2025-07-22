@@ -29,7 +29,7 @@ const HomePage = () => {
   useEffect(() => {
     if (user?._id) {
       notificationSocket.emit('join-user', user._id);
-      console.log("hello")
+      
 
       notificationSocket.on('new-notification', (notification) => {
         setNotifications((prev) => [notification, ...prev]);

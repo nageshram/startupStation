@@ -16,6 +16,9 @@ const StartupManager = () => {
 
   // Load startup data if editing
   useEffect(() => {
+    if(user.designation!== 'Founder') {
+    return <div className="p-4 text-red-600">Access Denied</div>;
+  }
     if (user?.startupId) {
       const startup = user.startupId;
       setForm({

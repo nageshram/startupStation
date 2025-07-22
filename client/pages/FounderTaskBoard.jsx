@@ -24,6 +24,9 @@ const FounderTaskBoard = ( ) => {
   };
 
   useEffect(() => {
+    if(user.designation!== 'Founder') {
+    return <div className="p-4 text-red-600">Access Denied</div>;
+  }
     fetchTasks();
   }, []);
 
@@ -65,8 +68,8 @@ const FounderTaskBoard = ( ) => {
   const groupTasks = (status) => tasks.filter(t => t.status === status);
 
   const statuses = [
-    { title: 'To Do', key: 'pending', bg: 'bg-blue-100', text: 'text-blue-800' },
-    { title: 'In Process', key: 'in-progress', bg: 'bg-yellow-100', text: 'text-yellow-800' },
+    { title: 'To Do', key: 'pending', bg: 'bg-blue-100', text: 'text-gray-800' },
+    { title: 'In Process', key: 'in-progress', bg: 'bg-yellow-100', text: 'text-gray-800' },
     { title: 'Completed', key: 'completed', bg: 'bg-green-100', text: 'text-green-800' },
   ];
   if(user?.designation != 'Founder') return;
@@ -131,7 +134,7 @@ const FounderTaskBoard = ( ) => {
                 <p className="text-sm">{task?.description}</p>
                 <p className="text-xs italic">Priority: {task?.priority}</p>
                 <p className="text-xs">Deadline: {new Date(task?.deadline).toLocaleDateString()}</p>
-                <div className="absolute top-2 right-2 flex gap-2">
+                <div className="absolute p-2 top-2 right-2 flex gap-2">
                   <PencilIcon className="w-4 h-4 cursor-pointer text-blue-600" onClick={() => handleEdit(task)} />
                   <Trash2Icon className="w-4 h-4 cursor-pointer text-red-600" onClick={() => handleDelete(task?._id)} />
                 </div>

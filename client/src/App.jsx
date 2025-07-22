@@ -26,40 +26,25 @@ import Documents from '../pages/Documents.jsx'
 
 function App() {
 
-  
   return (
        <>
-                    <ToastContainer
-                        position="top-right" />
-                  <Routes>
-                     <Route path="/" element={<HomeLayout />}>
-                                      <Route path="" element={<LandingPage />} />
-                                      <Route path="about" element={<About /> }/>
-                                      <Route path="contact" element={<Contact />}/>
-                          </Route>
+          <ToastContainer position="top-right" />
+          <Routes>
+          <Route path="/" element={<HomeLayout />}>
+                      <Route path="" element={<LandingPage />} />
+                      <Route path="about" element={<About /> }/>
+                      <Route path="contact" element={<Contact />}/>
+          </Route>
 
-                      <Route path="/login" element={<LoginPage />} />
-                      <Route path="/signup" element={<SignupPage />} />
-                      <Route path="/reset-password" element={<ForgotPassword />}/>
-                      <Route
-                  path="/home"
-          element={
-            <ProtectedRoute>
-              <HomePage />
-            </ProtectedRoute>
-
-          }
-        />
-        <Route path="/dashboard"
-               element={
-            <ProtectedRoute>
-              <UserProvider>
-              <Dashboard />
-              </UserProvider>
-            </ProtectedRoute>
-          }
-        >
-
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/reset-password" element={<ForgotPassword />}/>
+          <Route path="/home" element={ <ProtectedRoute> <HomePage /></ProtectedRoute>} />
+          <Route path="/dashboard" element={ <ProtectedRoute>
+                <UserProvider>
+                <Dashboard />
+                </UserProvider>
+                </ProtectedRoute> }>
           <Route path='' element={ <UpdateProfile/> } />
           <Route path='requests' element ={<Requests /> } />
           <Route path='founder-tasks' element={<FounderTaskBoard  />} />
@@ -70,12 +55,9 @@ function App() {
           <Route path='investor-analytics' element={ <InvestorAnalytics /> } />
           <Route path='founder-analytics' element={ <FounderAnalytics /> } />
           <Route path='documents' element={ <Documents /> } />
-
           </Route>
-          
           </Routes>
             </>
   )
 }
-
 export default App;

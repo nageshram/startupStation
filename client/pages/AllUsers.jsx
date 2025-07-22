@@ -7,7 +7,7 @@ const AllUsers = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [designationFilter, setDesignationFilter] = useState('');
-  //const { user } = useUser();
+  const { user } = useUser();
   const [users, setUsers ] = useState([])
   
 
@@ -20,6 +20,9 @@ const AllUsers = () => {
   };
 
   useEffect(() => {
+    if(user.designation!== 'Admin') {
+    return <div className="p-4 text-red-600">Access Denied</div>;
+  }
     fetchUsers();
   }, []);
 
@@ -31,6 +34,7 @@ const AllUsers = () => {
       fetchUsers(page);
     }
   };
+  
 
   const handleFilter = () => {
     fetchUsers(1, designationFilter);

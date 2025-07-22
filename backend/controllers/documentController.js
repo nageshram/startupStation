@@ -1,7 +1,7 @@
 import Document from '../models/document.js';
 
 export  const getDocumentsForUser = async (req, res) => {
-  const docs = await Document.find({ userId: req.user.id }).populate('userId' ,{select:'name username'}).populate('startupId', 'name founderId').populate({
+  const docs = await Document.find({ userId: req.user.id }).populate('userId' ,'name username').populate('startupId', 'name founderId').populate({
     path:'startupId',
     populate:{
       path:'founderId',
@@ -12,7 +12,7 @@ export  const getDocumentsForUser = async (req, res) => {
 };
 
 export const getDocumentsForStartup = async (req, res) => {
-  const docs = await Document.find({ startupId: req.params.startupId }).populate('userId' ,{select:'name username photo'}).populate('startupId', 'name founderId').populate({
+  const docs = await Document.find({ startupId: req.params.startupId }).populate('userId' ,'name username').populate('startupId', 'name founderId').populate({
     path:'startupId',
     populate:{
       path:'founderId',
@@ -23,7 +23,7 @@ export const getDocumentsForStartup = async (req, res) => {
 };
 
 export const getDocumentsForAdmin = async (re, res) => {
-  const docs = await Document.find().populate('userId' ,{select:'name username photo'}).populate('startupId', 'name founderId').populate({
+  const docs = await Document.find().populate('userId' ,'name username').populate('startupId', 'name founderId').populate({
     path:'startupId',
     populate:{
       path:'founderId',

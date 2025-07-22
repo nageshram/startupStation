@@ -112,7 +112,7 @@ export const ForgotPassword = () => {
 
   return (
     <section className="login min-h-screen flex flex-col items-center justify-center bg-gray-100 font-sans">
-       <p className="p-1 absolute top-8 right-8 md:p-2 flex justify-around gap-1 text-pink-800  text-3xl  font-extrabold max-sm:bg-sky-100 max-sm:rounded-2xl max-sm:p-5"> <Framer />  Startup stn. </p>
+       <p className="p-1 absolute top-8 right-8 md:p-2 flex justify-around gap-1 text-pink-800  text-3xl  font-extrabold max-sm:bg-sky-100 max-sm:rounded-2xl max-sm:p-5"> <Link to="/"> <Framer />  Startup stn. </Link></p>
       <p className='absolute top-8 left-8 text-md bg-sky-100 hover:text-blue-600 text-pink-800 rounded p-2 font-bold'> <Link to="/login"> Login </Link> </p>
   
       <div className="bg-white shadow-xl rounded-xl w-full max-w-md p-8 space-y-6">

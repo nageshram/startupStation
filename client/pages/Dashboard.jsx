@@ -13,7 +13,6 @@ const Dashboard = () => {
   const { user } = useUser();
   const location = useLocation();
   
-
    
   useEffect(() => {
    if(!user) return;
