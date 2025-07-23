@@ -3,7 +3,7 @@ import mongoose from "mongoose"
 const taskSchema = new mongoose.Schema({
   name: String,
   description: String,
-  status: { type: String, default: 'pending' },
+  status: { type: String,enum :['pending','in-progress','completed'], default: 'pending' },
   remarks: String,
   assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   deadline: Date,
