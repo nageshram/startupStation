@@ -98,14 +98,14 @@ useEffect(() => {
     }))
   }
 />
-<button className=" bg-green-700 text-gray-50 text-semibold rounded-md"
+<span className=" bg-green-700 text-gray-50 text-semibold text-sm rounded-md"
   onClick={() => {
     const updatedRemarks = remarksMap[task._id] ?? task.remarks;
     updateTask(task._id, { ...task, remarks: updatedRemarks });
   }}
 >
   Update
-</button>
+</span>
                     </div>
                   <select name='status' className="w-full mt-2 p-1 text-sm border border-gray-300 rounded"
                   onChange={(e) => updateTask(task._id, { ...task, status: e.target.value }) }
