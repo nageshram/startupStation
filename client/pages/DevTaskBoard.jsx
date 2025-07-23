@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { authFetch } from '../utils/authFetch.js';
 import { Trash2 } from 'lucide-react';
 import ResignModal from '../components/ResignModal.jsx';
@@ -9,7 +9,7 @@ const DevTaskBoard = () => {
   const { user } = useUser();
   const [loading, setLoading] = useState(false);
   const [showResignModal, setShowResignModal] = useState(false);
-
+   const remarksRef = useRef();
   
 
   const getTasks = async () => {
@@ -81,15 +81,19 @@ useEffect(() => {
                   <div className="text-sm text-gray-600">{task.description}</div>
                   <div className="text-sm text-gray-500">Priority: {task.priority}</div>
                   <div className="text-sm text-gray-500">Deadline: {task.deadline?.slice(0,10)}</div>
-                  
+                  <div className="flex gap-1">
                   <textarea
                     className="w-full mt-2 p-1 text-sm border border-gray-300 rounded"
                     placeholder="Add remarks..."
+                    ref={remarksRef}
                     value={task.remarks || ''}
-                    onChange={(e) =>   setTimeout(() => updateTask(task._id, { ...task, remarks: e.target.value }),2000)}
                   />
+                    <button onClick={()=>{ updateTask(task._id, { ...task, remarks: remarksRef.current.value })  }}
+      >update</button>
+
+                    </div>
                   <select name='status' className="w-full mt-2 p-1 text-sm border border-gray-300 rounded"
-                  onChange={(e) => updateTask(task._id, { ...task, status: e.target.value })}
+                  onChange={(e) => updateTask(task._id, { ...task, status: e.target.value }) }
                   >
                     
                     <option disabled selected>update-status</option>
