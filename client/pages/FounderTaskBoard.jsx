@@ -134,7 +134,7 @@ const FounderTaskBoard = ( ) => {
                 <p className="text-sm">{task?.description}</p>
                 <p className="text-xs italic">Priority: {task?.priority}</p>
                 <p className="text-xs">Deadline: {new Date(task?.deadline).toLocaleDateString()}</p>
-                <div className="absolute p-2 top-2 right-2 flex gap-2">
+                <div className="p-2 top-2 right-2 flex gap-2">
                   <PencilIcon className="w-4 h-4 cursor-pointer text-blue-600" onClick={() => handleEdit(task)} />
                   <Trash2Icon className="w-4 h-4 cursor-pointer text-red-600" onClick={() => handleDelete(task?._id)} />
                 </div>
