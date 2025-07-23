@@ -98,7 +98,7 @@ useEffect(() => {
     }))
   }
 />
-<button className=" bg-green-700 text-gray-50 p-1"
+<button className=" bg-green-700 text-gray-50 text-semibold rounded-md"
   onClick={() => {
     const updatedRemarks = remarksMap[task._id] ?? task.remarks;
     updateTask(task._id, { ...task, remarks: updatedRemarks });
