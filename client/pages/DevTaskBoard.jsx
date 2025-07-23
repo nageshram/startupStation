@@ -86,7 +86,7 @@ useEffect(() => {
                     className="w-full mt-2 p-1 text-sm border border-gray-300 rounded"
                     placeholder="Add remarks..."
                     ref={remarksRef}
-                    value={task.remarks || ''}
+                    value={ task.remarks}
                   />
                     <button onClick={()=>{ updateTask(task._id, { ...task, remarks: remarksRef.current.value })  }}
       >update</button>
