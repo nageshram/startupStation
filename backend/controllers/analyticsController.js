@@ -18,7 +18,7 @@ export const getStartupAnalytics = async (req, res) => {
     const tasks = await Task.find({ startupId: id });
     const team = await Team.findOne({ startupId: id }).populate('roles.assignedTo');
 
-    const taskStats = ['pending', 'in-process', 'completed'].map(status => ({
+    const taskStats = ['pending', 'in-progress', 'completed'].map(status => ({
       status,
       count: tasks.filter(t => t.status === status).length
     }));
