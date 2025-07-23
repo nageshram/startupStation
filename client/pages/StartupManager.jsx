@@ -248,7 +248,7 @@ const StartupManager = () => {
                 {team?.map((role) => (
                   <div key={role._id} className="border border-gray-300 rounded p-3 flex items-center justify-between">
                     <div>
-                      <p className="text-gray-700 font-semibold">{role.roleName}</p>
+                      <p className="text-gray-700 font-semibold">{role?.roleName}</p>
                       <button onClick={() => handleRemoveRole(role._id)} className="text-sm text-red-500 p-1">Remove role</button>
                       {role?.assignedTo ? (
                         <p className="text-sm text-gray-600">
