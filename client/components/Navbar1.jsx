@@ -72,7 +72,7 @@ const Navbar = ({ user, notifications = [], setErrors, setNotifications, toggleS
   return (
     <header className="flex justify-between items-center px-4 py-2 bg-white shadow-md z-20 relative top-0 left-0 right-0">
      
-     { currentPath.test('/dashboard') && (
+     { currentPath.includes('dashboard') && (
        <button
         onClick={toggleSidebar}
         className="sm:hidden text-gray-700 focus:outline-none"
