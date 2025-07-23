@@ -10,12 +10,11 @@ const DevTaskBoard = () => {
   const [loading, setLoading] = useState(false);
   const [showResignModal, setShowResignModal] = useState(false);
    const remarksRef = useRef();
-  const [remarks,setRemarks] = useState(task.remarks);
+  const [remarks,setRemarks] = useState({});
+  const [remarksMap, setRemarksMap] = useState({});
 
 
-  useEffect(()=>{
-    setRemarks(task.remarks || ''); 
-  },[task]);
+  
   
 
   const getTasks = async () => {
@@ -89,15 +88,24 @@ useEffect(() => {
                   <div className="text-sm text-gray-500">Deadline: {task.deadline?.slice(0,10)}</div>
                   <div className="flex gap-1">
                   <textarea
-                    className="w-full mt-2 p-1 text-sm border border-gray-300 rounded"
-                    placeholder="Add remarks..."
-        
-                    value={ remarks}
-                    onchange={ (e) => { setRemarks(e.target.value) } }
-                  />
-                    <button onClick={()=>{ updateTask(task._id, { ...task, remarks: remarks })  }}
-      >update</button>
-
+  className="w-full mt-2 p-1 text-sm border border-gray-300 rounded"
+  placeholder="Add remarks..."
+  value={remarksMap[task._id] ?? task.remarks ?? ''}
+  onChange={(e) =>
+    setRemarksMap((prev) => ({
+      ...prev,
+      [task._id]: e.target.value,
+    }))
+  }
+/>
+<button className=" bg-green-700 text-gray-50 p-1"
+  onClick={() => {
+    const updatedRemarks = remarksMap[task._id] ?? task.remarks;
+    updateTask(task._id, { ...task, remarks: updatedRemarks });
+  }}
+>
+  Update
+</button>
                     </div>
                   <select name='status' className="w-full mt-2 p-1 text-sm border border-gray-300 rounded"
                   onChange={(e) => updateTask(task._id, { ...task, status: e.target.value }) }
