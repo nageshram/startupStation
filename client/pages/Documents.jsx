@@ -48,14 +48,16 @@ const Documents = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {documents.map((doc) => (
             <div key={doc._id} className="bg-white rounded-lg shadow-md p-4">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">{doc.type}</h3>
-              <p className="text-sm text-gray-600 mb-2 whitespace-pre-wrap">{doc.content}</p>
-              <div className="text-xs text-gray-500 border-t pt-2 mt-2">
+              <div className="text-xs text-gray-500 border-b pb-2 pt-2 mt-2">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">{doc.type}</h3>
                 <p><span className="font-medium">Startup:</span> {doc.startupId?.name}</p>
                 <p><span className="font-medium">Founder:</span> {doc.startupId?.founderId?.name}</p>
                 <p><span className="font-medium">User:</span> {doc.userId?.name} (@{doc.userId?.username})</p>
-                <button onClick={() =>{ handleDelete(doc._id); }} className="text-red-500" >Delete</button>
+                
               </div>
+              
+              <p className="text-sm text-gray-600 mb-2 whitespace-pre-wrap text-justify">{doc.content}</p>
+              <button onClick={() =>{ handleDelete(doc._id); }} className="text-red-500" >Delete</button>
             </div>
           ))}
         </div>

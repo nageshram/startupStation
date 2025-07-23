@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { authFetch } from '../utils/authFetch.js';
-import { Trash2 } from 'lucide-react';
+import { ArrowUpCircle, Trash2 } from 'lucide-react';
 import ResignModal from '../components/ResignModal.jsx';
 import { useUser } from './UserContext.jsx';
 
@@ -88,7 +88,7 @@ useEffect(() => {
                   <div className="text-sm text-gray-500">Deadline: {task.deadline?.slice(0,10)}</div>
                   <div className="flex gap-1">
                   <textarea
-  className="w-full mt-2 p-1 text-sm border border-gray-300 rounded"
+  className="w-full mt-2 py-1 px-2 text-sm border border-gray-300 rounded"
   placeholder="Add remarks..."
   value={remarksMap[task._id] ?? task.remarks ?? ''}
   onChange={(e) =>
@@ -98,14 +98,14 @@ useEffect(() => {
     }))
   }
 />
-<span className="text-gray-70 text-sm rounded-md"
+<button className="text-gray-70 text-sm rounded-md text-blue-500 hover:text-green-600  px-2 py-1"
   onClick={() => {
     const updatedRemarks = remarksMap[task._id] ?? task.remarks;
     updateTask(task._id, { ...task, remarks: updatedRemarks });
   }}
 >
-  update
-</span>
+  <ArrowUpCircle className="inline" />
+</button>
                     </div>
                   <select name='status' className="w-full mt-2 p-1 text-sm border border-gray-300 rounded"
                   onChange={(e) => updateTask(task._id, { ...task, status: e.target.value }) }

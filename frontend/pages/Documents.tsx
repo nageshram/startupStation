@@ -49,7 +49,7 @@ const Documents = () => {
           {documents.map((doc) => (
             <div key={doc._id} className="bg-white rounded-lg shadow-md p-4">
               <h3 className="text-lg font-semibold text-gray-800 mb-2">{doc.type}</h3>
-              <p className="text-sm text-gray-600 mb-2 whitespace-pre-wrap">{doc.content}</p>
+              <p className="text-sm text-gray-600 mb-2 whitespace-pre-wrap text-justify">{doc.content}</p>
               <div className="text-xs text-gray-500 border-t pt-2 mt-2">
                 <p><span className="font-medium">Startup:</span> {doc.startupId?.name}</p>
                 <p><span className="font-medium">Founder:</span> {doc.startupId?.founderId?.name}</p>

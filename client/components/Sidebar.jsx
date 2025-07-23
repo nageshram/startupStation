@@ -2,7 +2,7 @@ import { Link } from "react-router-dom"
 const BASE_URL = import.meta.env.VITE_API_URL
 
 const Sidebar = ( {user} ) =>
-{
+{   
     if(!user) return null;
 
     return(
@@ -61,13 +61,12 @@ const Sidebar = ( {user} ) =>
                 </>
             )}
 
-
-            { user.designation === 'Investor ' && ( 
-                <>
-                    <li className="py-2"><Link  to="/dashboard/investor-analytics" className="text-gray-50 text-lg  hover:text-pink-700">Analytics</Link>   </li>
-                </>
-            )}
-                         <li className="py-2"><Link  to="/dashboard/documents" className="text-gray-50 text-lg  hover:text-pink-700">Documents</Link>   </li>
+{ user?.designation === 'Investor' && (<> <li className="py-2"><Link  to="/dashboard/investor-analytics" className="text-gray-50 text-lg  hover:text-pink-700">Analytics</Link>   </li>
+       </>)}
+            
+            
+        
+           <li className="py-2"><Link  to="/dashboard/documents" className="text-gray-50 text-lg  hover:text-pink-700">Documents</Link>   </li>
 
 
             </ul>

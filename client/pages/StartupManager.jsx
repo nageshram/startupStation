@@ -14,9 +14,7 @@ const StartupManager = () => {
   const { user, refreshUser } = useUser();
   const quote = '"Every startup begins with a dream, let yours fly."';
 
-  if(user?.designation!== 'Founder') {
-    return <div className="p-4 text-red-600">Access Denied</div>;
-  }
+ 
   // Load startup data if editing
   useEffect(() => {
     
@@ -142,9 +140,12 @@ const StartupManager = () => {
       await refreshUser();
     }
   };
+   if(user?.designation!== 'Founder') {
+    return <div className="p-4 text-red-600">Access Denied</div>;
+  }
 
   return (
-    <div className="p-6 md:w-[75vw] mx-auto bg-white shadow rounded text-gray-600">
+    <div className="p-6 md:w-[75vw] h-full mx-auto bg-white shadow rounded text-gray-600">
       <h1 className="text-2xl font-bold text-pink-700 mb-4">Startup Manager</h1>
       <blockquote className="italic text-center text-blue-600 mb-4">{quote}</blockquote>
 
@@ -247,10 +248,10 @@ const StartupManager = () => {
             {team.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {team?.map((role) => (
-                  <div key={role._id} className="border border-gray-300 rounded p-3 flex items-center justify-between">
+                  <div key={role?._id} className="border border-gray-300 rounded p-3 flex items-center justify-between">
                     <div>
-                      <p className="text-gray-700 font-semibold">{role?.roleName}</p>
-                      <button onClick={() => handleRemoveRole(role._id)} className="text-sm text-red-500 p-1">Remove role</button>
+                      <p className="text-gray-600 font-semibold">{role?.roleName}</p>
+                      <button onClick={() => handleRemoveRole(role?._id)} className="text-sm text-red-500 p-1">Remove role</button>
                       {role?.assignedTo ? (
                         <p className="text-sm text-gray-600">
                           Assigned to: <span className="font-medium text-blue-600">{role?.assignedTo?.name} ({role?.assignedTo?.designation})</span>
@@ -275,6 +276,26 @@ const StartupManager = () => {
             )}
           </div>
 
+<section className='mt-6 bg-white shadow-md rounded-lg p-4'>
+<h2 className="text-lg font-semibold text-pink-700 mb-4">Investors</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+               
+  {user?.startupId?.investors?.length > 0 ? (
+    user.startupId.investors.map((inv, i) => (
+      <div
+        key={i}
+        className="bg-white shadow-md rounded-xl p-4 border border-gray-300 text-gray-700"
+      >
+        <h3 className="text-lg font-semibold mb-1">{inv.name}</h3>
+        <p className="text-sm text-gray-600">Email: {inv.email}</p>
+        <p className="text-sm text-gray-600">username: @{inv.username}</p>
+      </div>
+    ))
+  ) : (
+    <p className="text-gray-500">No investors added yet.</p>
+  )}
+</div>
+</section>
           <button
             onClick={handleDelete}
             className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 mt-4"
