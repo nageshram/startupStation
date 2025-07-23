@@ -10,6 +10,12 @@ const DevTaskBoard = () => {
   const [loading, setLoading] = useState(false);
   const [showResignModal, setShowResignModal] = useState(false);
    const remarksRef = useRef();
+  const [remarks,setRemarks] = useState(task.remarks);
+
+
+  useEffect(()=>{
+    setRemarks(task.remarks || ''); 
+  },[task]);
   
 
   const getTasks = async () => {
@@ -85,10 +91,11 @@ useEffect(() => {
                   <textarea
                     className="w-full mt-2 p-1 text-sm border border-gray-300 rounded"
                     placeholder="Add remarks..."
-                    ref={remarksRef}
-                    value={ task.remarks}
+        
+                    value={ remarks}
+                    onchange={ (e) => { setRemarks(e.target.value) } }
                   />
-                    <button onClick={()=>{ updateTask(task._id, { ...task, remarks: remarksRef.current.value })  }}
+                    <button onClick={()=>{ updateTask(task._id, { ...task, remarks: remarks })  }}
       >update</button>
 
                     </div>
