@@ -4,6 +4,7 @@ import {Framer  } from 'lucide-react'
 import { toast } from 'react-toastify'
 import { authFetch } from '../utils/authFetch';
 const BASE_URL = import.meta.env.VITE_API_URL
+import { sanitizeInput } from '../utils/sanitizeInput';
 
 export const ForgotPassword = () => {
   const [step, setStep] = useState(1);
@@ -72,10 +73,11 @@ export const ForgotPassword = () => {
     }
 
     try {
+      const otp1 = sanitizeInput(otp);
       const res = await fetch(`${BASE_URL}/api/auth/reset-password-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, otp, newPassword }),
+        body: JSON.stringify({ email,otp1 , newPassword }),
       });
 
       const data = await res.json();

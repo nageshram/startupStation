@@ -82,13 +82,14 @@ const HomePage = () => {
         </div>
 
         {/* Middle Column: Feed */}
-        <div className="col-span-1 md:col-span-1">
+        <div className=" hidden md:block col-span-1 md:col-span-1">
           {/* On mobile, show feed only if drawer is null or 'feed' */}
-          {(drawer === null || drawer === 'feed') && user && (
+          { user && (
             <StartupFeed
               user={user}
               setErrors={setErrors}
               setActiveChatUser={setActiveChatUser}
+              setDrawer={setDrawer}
             />
           )}
         </div>
@@ -111,6 +112,14 @@ const HomePage = () => {
         {drawer === 'profile' && user && (
           <ProfileDetails user={user} setErrors={setErrors} setActiveChatUser={setActiveChatUser} />
         )}
+        {(drawer === null || drawer === 'feed') && user && (
+            <StartupFeed
+              user={user}
+              setErrors={setErrors}
+              setActiveChatUser={setActiveChatUser}
+              setDrawer={setDrawer}
+            />
+          )}
         {drawer === 'messages' && user && (
           <MessagingPanel
             user={user}

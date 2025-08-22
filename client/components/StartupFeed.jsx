@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { authFetch } from '../utils/authFetch';
 import { MessageCircle, MessageSquare } from 'lucide-react'
 import { toast } from 'react-toastify';
+import { sanitizeInput } from '../utils/sanitizeInput';
 const BASE_URL = import.meta.env.VITE_API_URL
 
-const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
+const StartupFeed = ({ user, setErrors, setActiveChatUser, setDrawer }) => {
   const [feed, setFeed] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState(null); // null means no search, object means search active
@@ -27,7 +28,8 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
   const handleSearch = async (e) => {
     if (e.key === 'Enter') {
       try {
-        const res = await authFetch(`/api/search/${searchTerm}`, {
+        const search = sanitizeInput(searchTerm);
+        const res = await authFetch(`/api/search/${search}`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }
         });
@@ -69,10 +71,11 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
 
   const sendInvestRequest = async (startupId, desc) => {
     try {
+      const description = sanitizeInput(desc);
       const res = await authFetch('/api/requests/invest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ startupId, desc }),
+        body: JSON.stringify({ startupId, description }),
       });
       const fullResponse = await res.json();
       if (!res.ok) { toast.info(fullResponse.msg || 'Failed to send investment request'); return;}
@@ -85,7 +88,8 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
 
   const sendJobRequest = async (startupId, desc, targetRoleId) => {
     try {
-      const body = { startupId, desc, targetRoleId };
+      const description = sanitizeInput(desc);
+      const body = { startupId, description, targetRoleId };
       const res = await authFetch('/api/requests/job', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -206,12 +210,12 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
           <div className="text-xs text-gray-500 italic">
             by <span className="text-pink-700 font-medium">@{startup.founderId.username}</span>
             <MessageSquare className='inline ml-1 text-gray-600 hover:text-gray-400 cursor-pointer'
-              onClick={() => setActiveChatUser({  
+              onClick={() => { setActiveChatUser({  
                 username: startup.founderId.username,
                 name: startup.founderId.name,
                 photo: startup.founderId.photo,
                 designation: startup.founderId.designation,
-              })}           
+              }); setDrawer('messages')}    }        
             />
 
           </div>
@@ -280,13 +284,14 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
       {/* Founder Message Option */}
       {user.designation === 'Founder' && startup.founderId?.username !== user.username && (
         <button
-          onClick={() =>
+          onClick={() => {
             setActiveChatUser({
               username: startup.founderId.username,
               name: startup.founderId.name,
               photo: startup.founderId.photo,
               designation: startup.founderId.designation,
-            })
+            }); setDrawer('messages');
+          }
           }
           className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
@@ -313,7 +318,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
           <div className="font-semibold">{founder.name} <span className="text-xs text-gray-500">@{founder.username}</span></div>
         </div>
         <button
-        onClick={() => setActiveChatUser(founder)}
+        onClick={() => { setActiveChatUser(founder); setDrawer('messages') }}
           className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
           Message
@@ -340,7 +345,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
                   {/* Dev/Investor: Message */}
                   {(user.designation === 'Dev' || user.designation === 'Investor') && (
                     <button
-                      onClick={() => setActiveChatUser(inv)}
+                      onClick={() => { setActiveChatUser(inv);setDrawer('messages')}}
                       className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
                     >
                       Message
@@ -351,7 +356,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
                     <>
                     <div className="flex flex-row gap-1" >
                       <button
-                        onClick={() => setActiveChatUser(inv)}
+                        onClick={() => { setActiveChatUser(inv);setDrawer('messages')}}
                         className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
                       >
                         Message
@@ -392,7 +397,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
                     <div className="font-semibold flex justify justify-between"><span> {dev.name}</span>
                     
                     <button
-                    onClick={() => setActiveChatUser(dev)}
+                    onClick={() => { setActiveChatUser(dev);setDrawer('messages')     } }
                     className="   text-white rounded"
                   >
                     <MessageSquare className='text-gray-600 hover:text-gray-400' />
@@ -410,7 +415,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
                   {user.designation === 'Founder' && user.startupId?.teamId?.roles?.length > 0 && (
                     <div className="flex flex-row  gap-2">
                       <select
-                        className="border border-gray-300 rounded p-1 text-sm border-gray-300"
+                        className="border rounded p-1 text-sm border-gray-300"
                         value={selectedRoles[dev._id] || ''}
                         onChange={e =>
                           setSelectedRoles({ ...selectedRoles, [dev._id]: e.target.value })
@@ -548,13 +553,15 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser }) => {
               {/* Actions */}
               <div className="flex items-center justify-between px-4 py-2 border-t border-gray-100 bg-gray-50">
                 <button
-                  onClick={() =>
+                  onClick={() => {
                     setActiveChatUser({
                       username: startup.founderId?.username,
                       name: startup.founderId?.name,
                       photo: startup.founderId?.photo,
                       designation: startup.founderId?.designation,
-                    })
+                    });
+                    setDrawer('messages')
+                  }
                   }
                   className="flex-1 mr-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm transition"
                 >

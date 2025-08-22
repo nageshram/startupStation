@@ -33,12 +33,13 @@ const InvestorAnalytics = () => {
     }
   }, [selectedStartup]);
 
-  if (!analytics) return <p className="text-center">Loading analytics...</p>;
+  if (!analytics) return <p className="text-center">No analytics found either you are not part of any startups or wait for a moment</p>;
 
   return (
+
     <div className="p-4 space-y-4 w-full mx-auto">
       <h2 className="text-2xl font-bold text-pink-700">Startup Analytics</h2>
-
+ 
       <div className="flex gap-4 flex-wrap">
         {startups.map(s => (
           <button

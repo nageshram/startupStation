@@ -2,6 +2,7 @@ import { Framer } from "lucide-react";
 import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { sanitizeInput } from "../utils/sanitizeInput";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -88,7 +89,7 @@ export const SignupPage = () => {
   };
 
   const checkUsername = async () => {
-    const username = formData.username.trim();
+    const username = sanitizeInput(formData.username.trim());
     if (!username) return;
     const res = await fetch(`${BASE_URL}/api/users/check-username`, {
       method: "POST",
@@ -100,7 +101,7 @@ export const SignupPage = () => {
   };
 
   const checkEmail = async () => {
-    const email = formData.email.trim();
+    const email = sanitizeInput(formData.email.trim());
     if (!email) return;
     const res = await fetch(`${BASE_URL}/api/users/check-email`, {
       method: "POST",
@@ -112,15 +113,15 @@ export const SignupPage = () => {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: sanitizeInput(e.target.value) });
     setErrors({ ...errors, [e.target.name]: "" });
   };
 
   return (
     <>
     <section className="login1 bg-violet-500">
-    <div className="w-full min-h-screen bg-purple-100 login flex justify-center items-center py-12 px-4 bg-gray-50">
-      <div className="w-full max-w-3xl bg-white p-6 rounded-lg shadow-md">
+    <div className="w-full min-h-screen bg-purple-100 login flex justify-center items-center py-12 px-4">
+      <div className="w-full max-w-3xl bg-white p-6  border border-blue-300 rounded-xl font-sans shadow-md">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-pink-600 flex items-center justify-center gap-2 mb-2">
             <Framer /> <Link to="/" >Startup Stn.</Link>
@@ -139,7 +140,7 @@ export const SignupPage = () => {
             { label: "Aadhar", name: "aadhar", type: "text" },
           ].map(({ label, name, type, note, onBlur, ref }) => (
             <div key={name}>
-              <label className="block font-medium text-gray-700">
+              <label className="block text-gray-900">
                 {label}
                 <input
                   type={type}
@@ -148,7 +149,7 @@ export const SignupPage = () => {
                   value={formData[name]}
                   onChange={handleChange}
                   onBlur={onBlur}
-                  className={`mt-1 block w-full px-3 py-2 border rounded-md ${
+                  className={`mt-1  block w-full px-3 py-2 border rounded-md ${
                     errors[name] ? "border-red-500" : "border-gray-300"
                   } focus:outline-none focus:ring-pink-500 focus:border-pink-500`}
                 />
@@ -159,7 +160,7 @@ export const SignupPage = () => {
           ))}
 
           <div>
-            <label className="block font-medium text-gray-700">
+            <label className="block text-gray-700">
               Designation
               <select
                 name="designation"

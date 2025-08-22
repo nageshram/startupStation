@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { authFetch } from '../utils/authFetch.js';
 import { toast } from 'react-toastify'
-import { useUser } from './UserContext.jsx'
+import { useUser } from './UserContext.jsx';
+import { sanitizeInput } from '../utils/sanitizeInput.js';
 
 const BASE_URL = import.meta.env.VITE_API_URL
 const UpdateProfile = () => {
@@ -51,11 +52,11 @@ const UpdateProfile = () => {
   }, []);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({ ...form, [e.target.name]: sanitizeInput(e.target.value) });
   };
 
   const handleDevChange = (e) => {
-    setDevProfile({ ...devProfile, [e.target.name]: e.target.value });
+    setDevProfile({ ...devProfile, [e.target.name]: sanitizeInput(e.target.value) });
   };
 
   const handlePicChange = (e) => {
@@ -82,7 +83,7 @@ const UpdateProfile = () => {
         });
         if (!imgRes.ok) throw new Error('Image upload failed');
         const imgData = await imgRes.json();
-        console.log(imgData.filename);
+        //console.log(imgData.filename);
         photoFilename = imgData.filename;
       }
 

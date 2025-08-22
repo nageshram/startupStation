@@ -3,6 +3,7 @@ import { authFetch } from '../utils/authFetch.js';
 import { ArrowUpCircle, Trash2 } from 'lucide-react';
 import ResignModal from '../components/ResignModal.jsx';
 import { useUser } from './UserContext.jsx';
+import { sanitizeInput } from '../utils/sanitizeInput.js';
 
 const DevTaskBoard = () => {
   const [tasks, setTasks] = useState([]);
@@ -101,7 +102,7 @@ useEffect(() => {
 <button className="text-gray-70 text-sm rounded-md text-blue-500 hover:text-green-600  px-2 py-1"
   onClick={() => {
     const updatedRemarks = remarksMap[task._id] ?? task.remarks;
-    updateTask(task._id, { ...task, remarks: updatedRemarks });
+    updateTask(task._id, { ...task, remarks: sanitizeInput(updatedRemarks) });
   }}
 >
   <ArrowUpCircle className="inline" />

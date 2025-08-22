@@ -3,6 +3,7 @@ import { authFetch } from '../utils/authFetch.js';
 import { useUser } from './UserContext.jsx';
 import { toast } from 'react-toastify';
 const BASE_URL = import.meta.env.VITE_API_URL
+import { sanitizeInput } from '../utils/sanitizeInput.js';
 
 const StartupManager = () => {
   const [form, setForm] = useState({ name: '', desc: '', status: 'active', teamRoles: '', photo: 'default.jpg' });
@@ -33,7 +34,7 @@ const StartupManager = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+    setForm(prev => ({ ...prev, [name]: sanitizeInput(value) }));
   };
 
   const handleUpload = async () => {
@@ -57,15 +58,15 @@ const StartupManager = () => {
     const photoToUse = newFilename || form.photo || 'default.jpg';
 
     const payload = {
-      name: form.name,
-      desc: form.desc,
-      status: form.status,
-      photo: photoToUse,
+      name: sanitizeInput(form.name),
+      desc: sanitizeInput(form.desc),
+      status: sanitizeInput(form.status),
+      photo: sanitizeInput(photoToUse),
     };
 
     // Include teamRoles only if creating for the first time
     if (!user?.startupId && form.teamRoles) {
-      payload.teamRoles = form.teamRoles;
+      payload.teamRoles = sanitizeInput(form.teamRoles);
     }
 
     const method = user?.startupId ? 'PATCH' : 'POST';
@@ -93,7 +94,7 @@ const StartupManager = () => {
     const res = await authFetch('/api/startup/add-role', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ startupId: user.startupId._id, roleName: newRole }),
+      body: JSON.stringify({ startupId: user.startupId._id, roleName: sanitizeInput(newRole) }),
     });
     if (res.ok) {
       const newData = await res.json();

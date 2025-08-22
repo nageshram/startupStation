@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { authFetch } from '../utils/authFetch.js';
 import { Trash2Icon, PencilIcon } from 'lucide-react';
 import { useUser } from './UserContext.jsx';
+import { sanitizeInput } from '../utils/sanitizeInput.js';
 
 const FounderTaskBoard = ( ) => {
   const [tasks, setTasks] = useState([]);
@@ -38,8 +39,8 @@ const FounderTaskBoard = ( ) => {
   const handleEdit = (task) => {
     setEditTask(task);
     setFormData({
-      name: task?.name,
-      description: task?.description,
+      name: sanitizeInput(task?.name),
+      description: sanitizeInput(task?.description),
       priority: task?.priority,
       deadline: task?.deadline?.slice(0, 10),
       assignedTo: task?.assignedTo,

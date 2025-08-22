@@ -2,6 +2,7 @@ import { MapPin, Phone, Mail, Twitter, Linkedin, Github } from "lucide-react";
 import { useState }  from 'react'
 import { toast } from 'react-toastify'
 const BASE_URL = import.meta.env.VITE_API_URL
+import { sanitizeInput } from "../utils/sanitizeInput";
 
 export const Contact = ()=>{
       const [formData, setFormData] = useState({
@@ -12,7 +13,7 @@ export const Contact = ()=>{
 
 const handleChange = (e)=>
 {
-  setFormData({...formData,[e.target.name]:e.target.value});
+  setFormData({...formData,[e.target.name]:sanitizeInput(e.target.value)});
 };
 
 const handleSubmit = async (e)=>
