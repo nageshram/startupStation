@@ -114,7 +114,8 @@ export const deleteStartup = async (req, res) => {
         if (role.assignedTo) {
           await DevProfile.findOneAndUpdate(
             { user: role.assignedTo },
-            { $unset: { teamId: "" } }
+            { $unset: { teamId: "" } },
+            { $unset: {status: null} },
           );
         }
       }

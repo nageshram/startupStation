@@ -67,9 +67,11 @@ const AllUsers = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {users.map((user) => (
           <div key={user._id} className="border border-gray-400 rounded shadow p-4 bg-white relative">
+           { user.designation != 'Admin' && (
             <div className="absolute top-2 right-2 cursor-pointer text-red-600 hover:text-red-800">
               <p onClick={() => handleDelete(user._id)}>Delete </p>
             </div>
+            )}
             <p><strong>Name:</strong> {user.name}</p>
             <p><strong>Username:</strong> {user.username}</p>
             <p><strong>Email:</strong> {user.email}</p>

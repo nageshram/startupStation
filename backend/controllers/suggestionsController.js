@@ -7,12 +7,21 @@ export const suggestForFounder = async (req, res) => {
   const startup = await Startup.findOne({ 'founderId.username': username });
   if (!startup) return res.json({ devs: [], investors: [] });
 
-  // Match devs by skills or desc with startup's openedRoles or desc
+  // Split startup openedRoles and desc into words for matching
+  const roleWords = Array.isArray(startup.openedRoles)
+    ? startup.openedRoles.flatMap(r => r.split(/\s+/))
+    : [];
+  const descWords = startup.desc ? startup.desc.split(/\s+/) : [];
+  const allWords = [...roleWords, ...descWords].filter(Boolean);
+
+  // Build $or array for matching any word in dev skills or desc
+  const orConditions = [
+    ...allWords.map(word => ({ skills: { $regex: word, $options: 'i' } })),
+    ...allWords.map(word => ({ desc: { $regex: word, $options: 'i' } }))
+  ];
+
   const devProfiles = await DevProfile.find({
-    $or: [
-      { skills: { $in: startup.desc } },
-      { desc: { $regex: startup.desc, $options: 'i' } }
-    ],
+    $or: orConditions,
     status: { $ne: 'hired' }
   }).populate('user', 'username name photo');
 
@@ -39,14 +48,21 @@ export const suggestForDev = async (req, res) => {
   const devProfile = await DevProfile.findOne({ user: req.user.id });
   if (!devProfile) return res.json({ startups: [] });
 
-  // Match startups by desc or openedRoles with dev's skills or desc
+  // Split dev skills and desc into words for matching
+  const skillWords = Array.isArray(devProfile.skills)
+    ? devProfile.skills.flatMap(s => s.split(/\s+/))
+    : [];
+  const descWords = devProfile.desc ? devProfile.desc.split(/\s+/) : [];
+  const allWords = [...skillWords, ...descWords].filter(Boolean);
+
+  // Build $or array for matching any word in desc or openedRoles
+  const orConditions = [
+    ...allWords.map(word => ({ desc: { $regex: word, $options: 'i' } })),
+    ...allWords.map(word => ({ openedRoles: { $regex: word, $options: 'i' } }))
+  ];
+
   const startups = await Startup.find({
-    $or: [
-      { openedRoles: { $in: devProfile.skills } },
-      {
-        desc: { $regex: devProfile.desc, $options: 'i' }
-      }
-    ]
+    $or: orConditions
   }).populate('founderId', 'username name photo');
 
   res.json({
@@ -66,7 +82,7 @@ export const suggestForDev = async (req, res) => {
 export const suggestForInvestor = async (req, res) => {
   // Example: startups where all roles are hired 
   const startups = await Startup.find({
-    $expr: { $eq: [ { $size: "$openedRoles" },2 ] }
+    //$expr: { $eq: [ { $size: "$openedRoles" },2 ] }
   }).populate('founderId', 'username name photo');
 
   res.json({

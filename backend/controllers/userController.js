@@ -146,6 +146,7 @@ export const updateUserPatch = async (req,res) => {
 export const deleteUser = async (req,res) => {
 
     try{
+
         const deleted = await User.findByIdAndDelete(req.params.id);
         if(!deleted)
         {

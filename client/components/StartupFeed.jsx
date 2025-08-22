@@ -205,7 +205,16 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, setDrawer }) => {
           <div className="text-sm text-gray-600">{startup.desc}</div>
           <div className="my-2">
             <span className="text-xs font-semibold text-gray-500">Open Roles: </span>
-            <span className="text-xs text-pink-600">{startup.openedRoles?.join(', ')}</span>
+            <span className="text-xs text-pink-600">{startup.teamId?.roles?.map((role) => (
+              
+              <> { (role.assignedTo === null && role.assignedTo !== undefined ) && (
+              <p key={role._id} value={role._id} className='inline'>
+                {role.roleName},
+              </p>
+              )}
+              </>
+
+            ))}</span>
           </div>
           <div className="text-xs text-gray-500 italic">
             by <span className="text-pink-700 font-medium">@{startup.founderId.username}</span>
@@ -508,7 +517,16 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, setDrawer }) => {
                   <p className="text-sm text-gray-600 mb-2 line-clamp-3">{startup.desc}</p>
                   <div className="mb-2">
                     <span className="text-xs font-semibold text-gray-500">Open Roles: </span>
-                    <span className="text-xs text-pink-600">{startup.openedRoles?.join(', ')}</span>
+                    <span className="text-xs text-pink-600">{startup.teamId?.roles?.map((role) => (
+              
+              <> { (role.assignedTo === null && role.assignedTo !== undefined ) && (
+              <p key={role._id} value={role._id} className='inline'>
+                {role.roleName},
+              </p>
+              )}
+              </>
+
+            ))}</span>
                   </div>
    {  user.designation !== 'Investor' && user.designation !== 'Admin' && user.designation !== 'Founder' && (
                 <select

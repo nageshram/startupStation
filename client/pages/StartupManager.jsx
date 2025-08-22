@@ -13,6 +13,7 @@ const StartupManager = () => {
   const [newRole, setNewRole] = useState('');
   const fileRef = useRef(null);
   const { user, refreshUser } = useUser();
+  const { submit, setSubmit }=  useState(false);
   const quote = '"Every startup begins with a dream, let yours fly."';
 
  
@@ -52,7 +53,7 @@ const StartupManager = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setSubmit(true);
     const newFilename = await handleUpload();
     console.log(newFilename)
     const photoToUse = newFilename || form.photo || 'default.jpg';
@@ -83,6 +84,7 @@ const StartupManager = () => {
     if (res.ok) {
       const data = await res.json();
       await refreshUser();
+      setSubmit(false);
       toast.success(user?.startupId ? 'Startup updated!' : 'Startup created!');
       setForm({ ...form, photo: photoToUse });
       if (!user?.startupId) await refreshUser();  //window.location.reload();
@@ -216,7 +218,7 @@ const StartupManager = () => {
           </div>
         </div>
 
-        <button type="submit" className="bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700">
+        <button type="submit" className="bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700" disabled={submit}>
           {user?.startupId ? 'Update Startup' : 'Create Startup'}
         </button>
       </form>
