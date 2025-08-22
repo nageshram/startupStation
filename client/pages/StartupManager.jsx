@@ -13,7 +13,7 @@ const StartupManager = () => {
   const [newRole, setNewRole] = useState('');
   const fileRef = useRef(null);
   const { user, refreshUser } = useUser();
-  const { submit, setSubmit }=  useState(false);
+  const [submit, setSubmit ]=  useState(false);
   const quote = '"Every startup begins with a dream, let yours fly."';
 
  
