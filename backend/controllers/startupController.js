@@ -204,7 +204,10 @@ export const removeRole = async (req, res) => {
     team.roles = team.roles.filter(role => role._id.toString() !== roleId.toString());
     await team.save();
     // Remove role from openedRoles
-    startup.openedRoles = startup.openedRoles.filter(role => role !== role.roleName);
+    const updateRoleList = await Startup.updateOne(
+      { _id: startupId},{ $pull:{openedRoles:role.rolename}});
+    
+    //startup.openedRoles = startup.openedRoles.filter(role => role !== role.roleName);
     await startup.save();
 
     res.status(200).json({ message: 'Role removed from team and openedRoles.' });

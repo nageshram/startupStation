@@ -5,13 +5,13 @@ export function sanitizeInput(input)
     const disallowedChars = /["':;?]/g;
     let sanitized = input.replace(disallowedChars, "");
 
-    sanitized = sanitized.replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/\//g,"&#47;");
+    sanitized = sanitized.replace(/&/g,"")
+    .replace(/</g,"")
+    .replace(/>/g,"")
+    .replace(/\//g,"");
 
     sanitized = sanitized.replace(/script/gi, "");
 
-    return sanitized.trim();
+    return sanitized;
     
 }

@@ -10,7 +10,7 @@ export const suggestForFounder = async (req, res) => {
   // Match devs by skills or desc with startup's openedRoles or desc
   const devProfiles = await DevProfile.find({
     $or: [
-      { skills: { $in: startup.openedRoles } },
+      { skills: { $in: startup.desc } },
       { desc: { $regex: startup.desc, $options: 'i' } }
     ],
     status: { $ne: 'hired' }
@@ -66,7 +66,7 @@ export const suggestForDev = async (req, res) => {
 export const suggestForInvestor = async (req, res) => {
   // Example: startups where all roles are hired 
   const startups = await Startup.find({
-    $expr: { $eq: [ { $size: "$openedRoles" }, 0 ] }
+    $expr: { $eq: [ { $size: "$openedRoles" },2 ] }
   }).populate('founderId', 'username name photo');
 
   res.json({

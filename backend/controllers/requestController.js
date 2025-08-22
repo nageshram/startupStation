@@ -231,7 +231,7 @@ export const confirmJobProposal = async (req, res) => {
 
     const updateRoleList = await Startup.updateOne(
       { _id: request.startupId},{ $pull:{openedRoles:request.rolename}});
-
+    
     let profile = await DevProfile.findOne({ user: req.user.id });
 
     await team.save();
