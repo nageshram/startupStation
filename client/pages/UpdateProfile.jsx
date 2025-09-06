@@ -56,7 +56,7 @@ const UpdateProfile = () => {
   };
 
   const handleDevChange = (e) => {
-    setDevProfile({ ...devProfile, [e.target.name]: sanitizeInput(e.target.value) });
+    setDevProfile({ ...devProfile, [e.target.name]: e.target.value });
   };
 
   const handlePicChange = (e) => {

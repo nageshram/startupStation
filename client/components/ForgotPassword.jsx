@@ -73,11 +73,11 @@ export const ForgotPassword = () => {
     }
 
     try {
-      const otp1 = sanitizeInput(otp);
+    
       const res = await fetch(`${BASE_URL}/api/auth/reset-password-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email,otp1 , newPassword }),
+        body: JSON.stringify({ email,otp, newPassword }),
       });
 
       const data = await res.json();

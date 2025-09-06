@@ -223,7 +223,7 @@ const Requests = () => {
                   Confirm Investment Proposal
                 </button>
               )}
-             { user?.designation !== 'Founder' && user?.dev?.status === null  ? (
+             { user?.designation !== 'Founder' && user?.designation !='Investor'  ? (
                 <>
                   {user?.designation === 'Dev'  && (request.status === 'accepted' || request.status === 'pending') && request.type === 'job-proposal' && (
                 <button onClick={() => confirmJobProposal(request._id)} className="bg-blue-500 text-white px-4 py-1 rounded mt-2">
