@@ -31,7 +31,7 @@ export const LoginPage = ()=>
          }
          else if(!res.ok)
          {
-            toast.error("Something went wrong please try again later!..");
+            toast.error("Something went wrong please try again later!.. or Enable third party cookies in your browser settings");
          }
         else{
              if (res.status == 200 || res.ok)
@@ -44,7 +44,7 @@ export const LoginPage = ()=>
         }
         catch(err)
         {
-            toast.error("Something went wrong try again later");
+            toast.error("Something went wrong try again later or enable third party cookies in your browser settings");
         }
 
         

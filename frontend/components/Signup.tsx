@@ -77,13 +77,13 @@ export const SignupPage = () => {
       if (res.status === 409) {
         toast.error("Username or email already exists.");
       } else if (!res.ok) {
-        toast.error("Signup failed. Try again.");
+        toast.error("Signup failed. Try again. Enable third party cookies in your browser settings.");
       } else {
         toast.success("Signup successful!");
         navigate("/home");
       }
     } catch (error) {
-      toast.error("Server error.");
+      toast.error("Server error or Enable third party cookies in your browser settings.");
     }
   };
 
