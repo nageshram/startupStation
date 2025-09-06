@@ -49,34 +49,31 @@ const upload = multer({
 router.get('/:folder/:id', getImage);
 
 // POST /api/upload?type=profile or type=startup
-router.post('/', upload.single('image'),(req, res) => {
-
-if (!req.body.type) {
+router.post('/', upload.single('image'), (req, res) => {
+  if (!req.body.type) {
     return res.status(400).json({ error: 'No image uploaded type is required' });
   }
-    const folder = req.body.type === 'startup' ? 'startup_pics' : 'profile_pics';
-    
-    const uploadPath = path.join(process.cwd(), 'uploads',folder);
+  const folder = req.body.type === 'startup' ? 'startup_pics' : 'profile_pics';
+  const uploadPath = path.join(process.cwd(), 'uploads', folder);
 
-    if(!fs.existsSync(uploadPath))
-      fs.mkdirSync(uploadPath, { recursive: true});
+  if (!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true });
+  }
 
-    const filename = `${req.file.fieldname}-${Date.now()}${path.extname(req.file.originalname)}`;
+  const filename = `${req.file.fieldname}-${Date.now()}${path.extname(req.file.originalname)}`;
+  const fullPath = path.join(uploadPath, filename);
 
-    const fullPath = path.join(uploadPath, filename);
-
-    fs.writeFileSync(fullPath, req.file.buffer);
-
+  // Write the file buffer to disk
+  fs.writeFile(fullPath, req.file.buffer, (err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Failed to upload image' });
+    }
     res.status(200).json({
-    message: 'Image uploaded successfully',
-    filename: filename
+      message: 'Image uploaded successfully',
+      filename: filename
+    });
   });
-
-
-
-
-
-} );
+});
 
 export default router;
 
