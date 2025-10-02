@@ -29,7 +29,7 @@ export const LandingPage = () => {
                    <Link to='/login' className="bg-purple-200 border-2 border-purple-700 hover:bg-gray-100 hover:border-gray-500 text-gray-700 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"  ><button>
                    Get started
                   </button></Link>
-                   <Link to='/about' className="bg-purple-200 border-2 border-purple-700 hover:bg-gray-100 hover:border-gray-500 text-gray-700 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"><button>
+                   <Link to='/about' className="border-2 border-gray-300 hover:border-primary-600 text-gray-700 hover:text-primary-600 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105"><button>
                    Learn More
                   </button></Link>
                 </div>
