@@ -3,7 +3,7 @@ import { authFetch } from '../utils/authFetch';
 import {Mail, Phone , Home } from 'lucide-react'
 const BASE_URL = import.meta.env.VITE_API_URL
 
-const ProfileDetails = ({ user, setErrors, setActiveChatUser }) => {
+const ProfileDetails = ({ user, setErrors, setActiveChatUser, setDrawer }) => {
   const [suggestions, setSuggestions] = useState([]);
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const ProfileDetails = ({ user, setErrors, setActiveChatUser }) => {
 
 
 { user.designation !== 'Admin' && (
-      <div className="mt-4 border-t border-gray-300  pt-2">
+      <div className="mt-4 border-t border-gray-200  pt-2">
         <h3 className="text-pink-700 font-semibold mb-2">Suggestions</h3>
         
         <div className="space-y-2">
@@ -61,7 +61,7 @@ const ProfileDetails = ({ user, setErrors, setActiveChatUser }) => {
                   </div>
                   <button
                     className="px-2 py-1 bg-blue-600 text-white rounded text-xs"
-                    onClick={() => setActiveChatUser(s)}
+                    onClick={() => { setActiveChatUser(s); setDrawer("messages"); }}
                   >
                     Message
                   </button>
@@ -76,7 +76,7 @@ const ProfileDetails = ({ user, setErrors, setActiveChatUser }) => {
                   </div>
                   <button
                     className="px-2 py-1 bg-blue-600 text-white rounded text-xs"
-                    onClick={() => setActiveChatUser(s)}
+                    onClick={() =>{ setActiveChatUser(s); setDrawer("messages"); }}
                   >
                     Message
                   </button>
@@ -89,8 +89,8 @@ const ProfileDetails = ({ user, setErrors, setActiveChatUser }) => {
           {(user.designation === 'Dev' || user.designation === 'Investor') && suggestions.startups?.length > 0 ? (
             suggestions.startups.map((s, i) => (
               <div key={`startup-${i}`} className="p-2 border rounded hover:bg-gray-100 flex items-center gap-2">
-                <img src={s.photo ? `${BASE_URL}/api/upload/startup_pics/` + s.photo : 'default.jpg'}
-                onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/startup_pics/default.jpg`; }}
+                <img src={s.photo ? `${BASE_URL}/api/upload/startup_pics/` + s.photo : 'default_startup.jpg'}
+                onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/startup_pics/default_startup.jpg`; }}
                 alt={s.name} className="w-8 h-8 rounded-full object-cover border" />
                 <div className="flex-1">
                   <p className="font-semibold text-gray-700">{s.name}</p>
@@ -101,13 +101,13 @@ const ProfileDetails = ({ user, setErrors, setActiveChatUser }) => {
                 {s.founder?.username && (
                   <button
                     className="px-2 py-1 bg-blue-600 text-white rounded text-xs"
-                    onClick={() =>
+                    onClick={() => {
                       setActiveChatUser({
                         username: s.founder.username,
                         name: s.founder.name,
                         photo: s.founder.photo,
                         designation: 'Founder',
-                      })
+                      }); setDrawer("messages"); }
                     }
                   >
                     Message

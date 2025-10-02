@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import { connectDB } from './config/db.js';
-import uploadRoutes from './routes/uploadRoutes.js';
+import uploadRoutes from './routes/uploadRoutes1.js';
 import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import requestRoutes from './routes/requestRoutes.js';
@@ -23,6 +23,7 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import cookieParser  from 'cookie-parser'
 import analyticsRoutes from './routes/analyticsRoutes.js'
+import mongoose from 'mongoose';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -50,7 +51,6 @@ app.use(cookieParser())
 app.use(express.json());
 
 
-app.use('backend/uploads', express.static(path.join(__dirname, 'backend/uploads')));
 app.use('/api/upload', uploadRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
@@ -64,9 +64,6 @@ app.use('/api/search', searchRoute);
 app.use('/api/contactadmin', contactAdminRoute );
 app.use('/api/suggestions', suggestionRoutes);
 app.use('/api/analytics', analyticsRoutes);
-app.use('/uploads/profile_pics', express.static(path.join(__dirname, 'backend/uploads/profile_pics')));
-app.use('/uploads/startup_pics', express.static(path.join(__dirname, 'backend/uploads/startup_pics')));
-
 
 
 initSocketServer(io);         // Messages
@@ -81,13 +78,6 @@ app.get("/", (req, res)=>{
 
 //console.log(process.env.MONGO_URI);
 const port = process.env.PORT || 5000;
-/*
-app.listen(port,()=>{
-   connectDB();  
-    console.log("Express Server running at "+ port);
-});
-*/
-//const socketPort = process.env.SOCKET_PORT || 5050
 server.listen(port,()=>
 { 
   connectDB();  

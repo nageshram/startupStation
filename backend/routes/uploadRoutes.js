@@ -1,80 +1,51 @@
-import { uploadImage, getImage } from '../controllers/uploadController.js';
-import multer from 'multer';
-import express from 'express';
-import path from 'path';
-import fs from 'fs'
-const router = express.Router();
+import express from "express";
+import { MongoClient, GridFSBucket } from "mongodb";
+import fs from "fs";
+import crypto from "crypto";
+import path from "path";
+import mongoose from "mongoose";
+import multer from "multer";
+import dotenv from "dotenv";
+dotenv.config();
 
-const baseUploadDir = path.join('uploads');
+const router = express.Router();  
+const dbName = "test";
+let bucket;
 
-/* Dynamic storage based on field
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    let folder;
-    const { photo, type }= req.body;
-    console.log(type)
-    if (type === 'startup') folder = 'startup_pics';
-    else folder = 'profile_pics';
-    const uploadDir = path.join(baseUploadDir, folder);
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-  },
-});
-*/
+MongoClient.connect(process.env.MONGO_URI)
+  .then(client => {
+    const db = client.db(dbName);
+    bucket = new GridFSBucket(db, { bucketName: "uploads" });
+    console.log("MongoDB connected");
+  })
+  .catch(err => console.error(err));
 
-const storage = multer.memoryStorage();
+router.post("/upload", (req, res) => {
+  const filename = req.file.filename+ "-"+Date.now(); 
+  const uploadStream = bucket.openUploadStream(filename);
 
-// File filter
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|gif/;
-  const isValidExt = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-  const isValidMime = allowedTypes.test(file.mimetype);
-  if (isValidExt && isValidMime) {
-    cb(null, true);
-  } else {
-    cb(new Error('Only images are allowed'));
-  }
-};
-
-
-
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
-  fileFilter: fileFilter,
-});
-
-router.get('/:folder/:id', getImage);
-
-// POST /api/upload?type=profile or type=startup
-router.post('/', upload.single('image'), (req, res) => {
-  if (!req.body.type) {
-    return res.status(400).json({ error: 'No image uploaded type is required' });
-  }
-  const folder = req.body.type === 'startup' ? 'startup_pics' : 'profile_pics';
-  const uploadPath = path.join(process.cwd(), 'uploads', folder);
-
-  if (!fs.existsSync(uploadPath)) {
-    fs.mkdirSync(uploadPath, { recursive: true });
-  }
-
-  const filename = `${req.file.fieldname}-${Date.now()}${path.extname(req.file.originalname)}`;
-  const fullPath = path.join(uploadPath, filename);
-
-  // Write the file buffer to disk
-  fs.writeFile(fullPath, req.file.buffer, (err) => {
-    if (err) {
-      return res.status(500).json({ error: 'Failed to upload image' });
-    }
-    res.status(200).json({
-      message: 'Image uploaded successfully',
-      filename: filename
+  req.pipe(uploadStream) // directly stream request body to GridFS
+    .on("error", (err) => {
+      console.error(err);
+      res.status(500).send("Error uploading file");
+    })
+    .on("finish", () => {
+      res.status(200).json({message: "File uploaded successfully", filename: filename});
     });
-  });
+});
+
+
+router.get("/profile_pics/:filename", (req, res) => {
+  bucket.openDownloadStreamByName(req.params.filename)
+    .pipe(res)
+    .on("error", () => res.status(404).send("File not found"));
+});
+
+
+router.get("/startup_pics/:filename", (req, res) => {
+  bucket.openDownloadStreamByName(req.params.filename)
+    .pipe(res)
+    .on("error", () => res.status(404).send("File not found"));
 });
 
 export default router;
-
-

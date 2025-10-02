@@ -196,7 +196,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, setDrawer }) => {
         <img
           src={startup.photo ? `${BASE_URL}/api/upload/startup_pics/${startup.photo}` : '/default.jpg'}
           className="w-20 h-20 rounded object-cover"
-          onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/startup_pics/default.jpg`; }}
+          onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/startup_pics/default_startup.jpg`; }}
           alt="startup"
         />
         <div className="flex-1">

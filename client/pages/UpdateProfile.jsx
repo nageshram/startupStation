@@ -74,8 +74,8 @@ const UpdateProfile = () => {
 
       if (profilePic) {
         const imgForm = new FormData();
-        imgForm.append('image', profilePic);
-        imgForm.append('type', 'profile');
+        imgForm.append('file', profilePic);
+        
 
         const imgRes = await authFetch('/api/upload', {
           method: 'POST',
@@ -163,13 +163,16 @@ const UpdateProfile = () => {
                 <span className="material-icons">edit</span>
               </button>
             )}
+            <form enctype="multipart/formdata">
             <input
               type="file"
+              name="file"
               accept="image/*"
               ref={fileInputRef}
               className="hidden"
               onChange={handlePicChange}
             />
+            </form>
           </div>
           <h2 className="mt-2 font-bold text-gray-700 text-center">{form.name}</h2>
           <p className="text-pink-700 font-semibold">@{form.username}</p>
@@ -186,7 +189,7 @@ const UpdateProfile = () => {
           )}
         </div>
 
-        <form className="flex-1 w-full h-screen **:border-gray-300 " onSubmit={handleSave}>
+        <form className="flex-1 w-full h-screen **:border-gray-300 " onSubmit={handleSave} encType="multipart/form-data">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
             <span className='font-semibold text-pink-700 my-5'>Profile Details</span>

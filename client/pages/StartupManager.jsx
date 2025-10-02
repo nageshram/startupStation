@@ -27,7 +27,7 @@ const StartupManager = () => {
         desc: startup.desc || '',
         status: startup.status || 'active',
         teamRoles: '',
-        photo: startup.photo || 'default.jpg'
+        photo: startup.photo || 'default_startup.jpg'
       });
       setTeam(startup.teamId?.roles || []);
     }
@@ -41,8 +41,7 @@ const StartupManager = () => {
   const handleUpload = async () => {
     if (!photoFile) return null;
     const formData = new FormData();
-    formData.append('image', photoFile);
-    formData.append('type', 'startup');
+    formData.append('file', photoFile);
     const res = await authFetch('/api/upload', { method: 'POST', body: formData });
     if (res.ok) {
       const data = await res.json();
@@ -152,12 +151,12 @@ const StartupManager = () => {
       <h1 className="text-2xl font-bold text-pink-700 mb-4">Startup Manager</h1>
       <blockquote className="italic text-center text-blue-600 mb-4">{quote}</blockquote>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
         <div className="flex flex-col md:flex-row items-start gap-4">
           <div className="relative">
             <img
-              src={preview || `${BASE_URL}/api/upload/startup_pics/${form.photo || 'default.jpg'}`}
-              onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/startup_pics/default.jpg`; }}
+              src={preview || `${BASE_URL}/api/upload/startup_pics/${form.photo || 'default_startup.jpg'}`}
+              onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/startup_pics/default_startup.jpg`; }}
               alt="Startup"
               className="w-24 h-24 object-cover rounded-full border border-gray-400"
             />

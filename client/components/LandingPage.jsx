@@ -26,17 +26,17 @@ export const LandingPage = () => {
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <button className="bg-purple-200 border-2 border-purple-700 hover:bg-gray-100 hover:border-gray-500 text-gray-700 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                    <Link to='/login'>Get started</Link>
-                  </button>
-                  <button className="border-2 border-gray-300 hover:border-primary-600 text-gray-700 hover:text-primary-600 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105">
-                    <Link to='/about'>Learn More</Link>
-                  </button>
+                   <Link to='/login'><button className="bg-purple-200 border-2 border-purple-700 hover:bg-gray-100 hover:border-gray-500 text-gray-700 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                   Get started
+                  </button></Link>
+                   <Link to='/about'><button className="border-2 border-gray-300 hover:border-primary-600 text-gray-700 hover:text-primary-600 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105">
+                   Learn More
+                  </button></Link>
                 </div>
               </div>
               <div className="relative">
                 <div className="relative z-10 rounded-3xl p-8 transform rotate-3 hover:rotate-0 transition-transform duration-500">
-                  <img src= {`${BASE_URL}/api/upload/startup_pics/6304080.jpg`} className="flex w-full h-auto filter bg-violet-300 rounded-2xl items-center" alt="graphics people building startups" />
+                  <img src= {`${BASE_URL}/api/upload/6304080.jpg`} className="flex w-full h-auto filter bg-violet-300 rounded-2xl items-center" alt="graphics people building startups" />
                 </div>
                 <div className="absolute -top-6 -right-6 w-32 h-32 bg-primary-100 rounded-full opacity-50 animate-pulse"></div>
                 <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-purple-100 rounded-full opacity-40 animate-pulse delay-1000"></div>

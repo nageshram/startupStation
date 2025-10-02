@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 const BASE_URL = import.meta.env.VITE_API_URL
+import { Link } from 'react-router-dom';
 
 export const FeaturedStartups = () => {
   const [startups, setStartups] = useState([]);
@@ -44,20 +45,20 @@ export const FeaturedStartups = () => {
                   }
                   alt={startup.name}
                   className="w-full h-48 object-cover"
-                  onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/startup_pics/default.jpg`; }}
+                  onError={e => { e.target.onerror = null; e.target.src = `${BASE_URL}/api/upload/startup_pics/default_startup.jpg`; }}
                 />
                 <div className="p-6">
                   <h3 className="text-xl font-bold text-gray-900 mb-2">
                     {startup.name}
                   </h3>
-                  <p className="text-gray-600 mb-4">{startup.desc}</p>
+                  <p className="text-gray-600 mb-4 text-ellipsis">{startup.desc}</p>
                   <div className="flex items-center justify-between">
                     <span className="bg-purple-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">
                       {startup.category}
                     </span>
-                    <button className="text-gray-700 hover:text-blue-700">
+                 <Link to='/login'>   <button className="text-gray-700 hover:text-blue-700">
                       Learn more
-                    </button>
+                    </button></Link>
                   </div>
                 </div>
               </div>

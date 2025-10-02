@@ -110,7 +110,7 @@ const HomePage = () => {
       {/* Mobile Conditional Rendering */}
       <div className="md:hidden px-4 pb-8">
         {drawer === 'profile' && user && (
-          <ProfileDetails user={user} setErrors={setErrors} setActiveChatUser={setActiveChatUser} />
+          <ProfileDetails user={user} setErrors={setErrors} setActiveChatUser={setActiveChatUser} setDrawer={setDrawer} />
         )}
         {(drawer === null || drawer === 'feed') && user && (
             <StartupFeed
