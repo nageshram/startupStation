@@ -118,7 +118,7 @@ const StartupFeed = ({ user, setErrors, setActiveChatUser, setDrawer }) => {
       <div className="bg-white p-4 rounded shadow flex flex-col gap-2">
         <div className="flex gap-2">
           <input
-            type="text"
+            type="search"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e?.target?.value)}
             onKeyDown={handleSearch}
